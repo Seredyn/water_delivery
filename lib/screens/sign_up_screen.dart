@@ -2,35 +2,39 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
-import 'package:water_delivery/screens/sign_up_screen.dart';
+import 'package:water_delivery/screens/sign_in_screen.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
-  static const String id = "sign_in_screen";
+  static const String id = "sign_up_screen";
 
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
+  String _name = "";
   String _email = "";
   String _password = "";
 
+  late final FocusNode _emailFocusNode;
   late final FocusNode _passwordFocusNode;
 
   @override
   void initState() {
     super.initState();
+    _emailFocusNode = FocusNode();
     _passwordFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
+    _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
@@ -41,7 +45,8 @@ class _SignInScreenState extends State<SignInScreen> {
       _formKey.currentState!.save(); // это вызывает метод onsave в формах
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
-      context.read<AuthCubit>().signInWithEmailAndPassword(
+      context.read<AuthCubit>().createUserWithEmailAndPassword(
+            name: _name,
             email: _email,
             password: _password,
           );
@@ -77,13 +82,35 @@ class _SignInScreenState extends State<SignInScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 7.0),
                       child: Text(
-                        "Log into your account",
+                        "Create new account",
                         textDirection: TextDirection.ltr,
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
+                    SizedBox(height: 15,),
+                    TextFormField(
+                      onSaved: (value) {
+                        _name = value!.trim();
+                      },
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        labelText: "Enter your name",
+                        border: OutlineInputBorder(),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_emailFocusNode);
+                      },
+                    ),
                     const SizedBox(height: 15),
                     TextFormField(
+                      focusNode: _emailFocusNode,
                       onSaved: (value) {
                         _email = value!.trim();
                       },
@@ -103,7 +130,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         FocusScope.of(context).requestFocus(_passwordFocusNode);
                       },
                     ),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     TextFormField(
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
@@ -126,54 +155,24 @@ class _SignInScreenState extends State<SignInScreen> {
                         _submit(context);
                       },
                     ),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     ElevatedButton(
-                      child: const Text('Sign In'),
                       onPressed: () {
                         _submit(context);
                       },
+                      child: const Text('Create new account'),
                     ),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     TextButton(
-                        child: Text("Create new account"),
+                        child: Text("Log into your account"),
                         onPressed: () {
-                          //TODO:- Go to Sign Up Screen
-                          Navigator.of(context).pushReplacementNamed(SignUpScreen.id);
+                          Navigator.of(context)
+                              .pushReplacementNamed(SignInScreen.id);
                         }),
-                    const SizedBox(height: 15,),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          //TODO:- Delete TESTS Sign In before Publishing app
-                          Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  //TODO:- Sign In as test1
-                                },
-                                child: Text("Test1")),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(5),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  //TODO:- Sign In as test2
-                                },
-                                child: Text("Test2")),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(5),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  //TODO:- Sign In as test3
-                                },
-                                child: Text("Test3")),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),

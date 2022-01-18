@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 part 'auth_state.dart';
 
@@ -40,5 +41,43 @@ class AuthCubit extends Cubit<AuthState> {
     required String name,
     required String email,
     required String password,
-  }) async {}
+  }) async {
+    emit(AuthLoading());
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc("clients")
+          .collection("users-clients")
+          .doc(userCredential.user!.uid)
+          .set({
+        "userID": userCredential.user!.uid as String,
+        "name": name as String,
+        "email": email as String,
+        "role": "customer" as String,
+      });
+
+      userCredential.user!.updateDisplayName(name);
+
+      emit(AuthSignedUp());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        emit(AuthFailure(message: "The password provided is too weak."));
+        print('Create user: The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        emit(
+            AuthFailure(message: "The account already exists for that email."));
+        print('Create user: The account already exists for that email.');
+      }
+    } catch (e) {
+      emit(AuthFailure(message: "An error occurred while creating an account"));
+      print(e);
+    }
+  }
 }
