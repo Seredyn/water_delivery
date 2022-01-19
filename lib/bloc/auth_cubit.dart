@@ -63,6 +63,8 @@ class AuthCubit extends Cubit<AuthState> {
         "role": "customer" as String,
       });
 
+      print ("Crete user will done");
+
       userCredential.user!.updateDisplayName(name);
 
       emit(AuthSignedUp());
@@ -77,7 +79,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } catch (e) {
       emit(AuthFailure(message: "An error occurred while creating an account"));
-      print(e);
+      print(e.toString());
     }
   }
 }
