@@ -53,8 +53,6 @@ class AuthCubit extends Cubit<AuthState> {
 
       await FirebaseFirestore.instance
           .collection("users")
-          .doc("clients")
-          .collection("users-clients")
           .doc(userCredential.user!.uid)
           .set({
         "userID": userCredential.user!.uid as String,
@@ -82,4 +80,6 @@ class AuthCubit extends Cubit<AuthState> {
       print(e.toString());
     }
   }
+
+
 }
