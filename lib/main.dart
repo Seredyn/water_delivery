@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
 
           if (snapshot.hasError) {
             print("Snapshot have some error");
-            return Text("Something went wrong");
+            return SignUpScreen();
           }
 
           if (!snapshot.hasData) {
