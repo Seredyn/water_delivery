@@ -27,7 +27,11 @@ class MyApp extends StatelessWidget {
   Widget _buildHomeScreen () {
 
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    String documentId = FirebaseAuth.instance.currentUser!.uid;
+    String? documentId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (documentId == null) {
+      return SignUpScreen();
+    }
 
     return FutureBuilder<DocumentSnapshot>(
         future: users.doc(documentId).get(),
@@ -52,7 +56,12 @@ class MyApp extends StatelessWidget {
             return SignUpScreen();
           }
 
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot == null) {
+            print("Snapshot is null");
+            return SignUpScreen();
+          }
+
+          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
             Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
             String role = data["role"];
             if (role == "customer") {
@@ -61,7 +70,9 @@ class MyApp extends StatelessWidget {
             if (role == "admin") {
               return AdminScreen();
             }
-            //TODO:- implements check for Drivers
+            if (role == "driver") {
+              return DriverScreen();
+            }
           }
 
           return SignUpScreen();
