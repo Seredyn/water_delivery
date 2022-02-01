@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
+import 'package:water_delivery/screens/create_user_screen.dart';
 import 'package:water_delivery/screens/sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -48,6 +49,17 @@ class _SignInScreenState extends State<SignInScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error. Check all Text Fields')));
+    }
+  }
+
+  Future<void> _signInWithGoogle () async {
+    try {
+      await context.read<AuthCubit>().signInWithGoogle();
+
+    } catch (error) {
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error in Sign in with Google')));
     }
   }
 
@@ -174,6 +186,16 @@ class _SignInScreenState extends State<SignInScreen> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 15,),
+                    FloatingActionButton.extended(onPressed: () async {
+
+                      await _signInWithGoogle ();
+
+                      context.read<AuthCubit>().navigateToScreenByRole(context);
+
+
+                    }, label: Text("Lod In With Google")),
+                    SizedBox(height: 15,),
                   ],
                 ),
               ),

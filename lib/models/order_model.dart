@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:latlong2/latlong.dart';
 
 class Order {
   final String orderID;
@@ -8,7 +9,7 @@ class Order {
   final Timestamp orderCreateTimeStamp;
   final Map orderProductsList;
   final String orderDeliveryAddress;
-  //final LatLng orderDeliveryAddress;
+  final LatLng orderDeliveryLatLng;
   final String orderStatus;
   final double orderPrise;
   final String orderPayMethod;
@@ -22,6 +23,7 @@ class Order {
     required this.orderCreateTimeStamp,
     required this.orderProductsList,
     required this.orderDeliveryAddress,
+    required this.orderDeliveryLatLng,
     required this.orderStatus,
     required this.orderPrise,
     required this.orderPayMethod,

@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:water_delivery/screens/admin_screen.dart';
+import 'package:water_delivery/screens/create_order_screen.dart';
+import 'package:water_delivery/screens/create_user_screen.dart';
 import 'package:water_delivery/screens/driver_screen.dart';
 import 'package:water_delivery/screens/my_home_page.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
@@ -30,6 +32,10 @@ class MyApp extends StatelessWidget {
     String? documentId = FirebaseAuth.instance.currentUser?.uid;
 
     if (documentId == null) {
+      return SignUpScreen();
+    }
+
+    if (documentId.isEmpty) {
       return SignUpScreen();
     }
 
@@ -61,19 +67,23 @@ class MyApp extends StatelessWidget {
             return SignUpScreen();
           }
 
-          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-            Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-            String role = data["role"];
-            if (role == "customer") {
-              return UserScreen();
-            }
-            if (role == "admin") {
-              return AdminScreen();
-            }
-            if (role == "driver") {
-              return DriverScreen();
-            }
-          }
+          // if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          //   Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>;
+          //   String? role = data["role"];
+          //   if (role == null) {
+          //     return SignUpScreen();
+          //   }
+          //   if (role == "customer") {
+          //     return UserScreen();
+          //   }
+          //   if (role == "admin") {
+          //     return AdminScreen();
+          //   }
+          //   if (role == "driver") {
+          //     return DriverScreen();
+          //   }
+          //   return SignUpScreen();
+          // }
 
           return SignUpScreen();
         }
@@ -107,6 +117,8 @@ class MyApp extends StatelessWidget {
           AdminScreen.id : (context) => AdminScreen(),
           DriverScreen.id : (context) => DriverScreen(),
           UserScreen.id : (context) => UserScreen(),
+          CreateUserScreen.id : (context) => CreateUserScreen(),
+          CreateOrderScreen.id : (context) => CreateOrderScreen(),
         },
       ),
     );

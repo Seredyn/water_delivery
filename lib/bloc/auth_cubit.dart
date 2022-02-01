@@ -3,6 +3,9 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:water_delivery/screens/user_screen.dart';
 
 part 'auth_state.dart';
 
@@ -61,7 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
         "role": "customer" as String,
       });
 
-      print ("Crete user will done");
+      print("Crete user will done");
 
       userCredential.user!.updateDisplayName(name);
 
@@ -81,5 +84,76 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
+  Future<void> signInWithGoogle() async {
+    // Trigger the authentication flow Запускаем поток аутентификации
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request Получаем данные авторизации из запроса
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential Создаем новые учетные данные
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Map<String, dynamic> credentialParametersMap = credential.asMap();
+    // print("---------------------------------------------");
+    // print(credential);
+    // print("---------------------------------------------");
+    // print(credentialParametersMap);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print("==========================================");
+        print('Document data: ${documentSnapshot.data()}');
+      } else {
+        print('Document does not exist on the database');
+
+        String _userName = "";
+        String _userEmail = "";
+        String _phoneNumber = "";
+        if (FirebaseAuth.instance.currentUser!.displayName != null) {
+          _userName = FirebaseAuth.instance.currentUser!.displayName!;
+        }
+        if (FirebaseAuth.instance.currentUser!.email != null) {
+          _userEmail = FirebaseAuth.instance.currentUser!.email!;
+        }
+        if (FirebaseAuth.instance.currentUser!.phoneNumber != null) {
+          _phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
+        }
+
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
+          "userID": FirebaseAuth.instance.currentUser!.uid,
+          "name": _userName,
+          "email": _userEmail,
+          "phoneNumber" : _phoneNumber,
+          "role": "customer",
+        });
+      }
+
+    // Once signed in, return the UserCredential После входа возвращаем UserCredential
+    return FirebaseAuth.instance.signInWithCredential(credential);
+
+    } );
+
+  }
+
+  navigateToScreenByRole (context) {
+    //TODO:- create navigation for all users role
+      Navigator.of(context).pushReplacementNamed(UserScreen.id);
+    }
 
 }
