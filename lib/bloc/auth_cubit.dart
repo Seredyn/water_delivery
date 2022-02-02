@@ -156,4 +156,53 @@ class AuthCubit extends Cubit<AuthState> {
       Navigator.of(context).pushReplacementNamed(UserScreen.id);
     }
 
+  Future<void> addAddressDelivery ({
+    required String addressOwnerID,
+  required String addressName,
+  required String townName,
+  required String streetName,
+  required String houseNumber,
+  required String korpusNumber,
+  required String sectionNumber,
+  required String apartmentNumber,
+  required String entranceNumber, //номер подъезда
+  required String floorNumber,
+  required String additionalInformAddress,
+}) async {
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(addressOwnerID)
+          .collection("addresses")
+          .add({
+        "addressOwnerID": addressOwnerID as String,
+        "addressName": addressName as String,
+        "townName": townName as String,
+        "streetName": streetName as String,
+        "houseNumber": houseNumber as String,
+        "korpusNumber": korpusNumber as String,
+        "sectionNumber": sectionNumber as String,
+        "apartmentNumber": apartmentNumber as String,
+        "entranceNumber": entranceNumber as String,
+        "floorNumber": floorNumber as String,
+        "additionalInformAddress": additionalInformAddress as String,
+      }).then((value) {
+        print("Address Added");
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(addressOwnerID)
+            .collection("addresses")
+            .doc(value.id)
+            .set({
+          "addressID": value.id as String,
+        });
+        print("Address ID Updated");
+      }).catchError((error) => print("Failed to add address: $error"));;
+    } catch (e) {
+      print("Some error hapens when address was added");
+    }
+
+  }
+
 }

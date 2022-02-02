@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
+import 'package:water_delivery/screens/add_address_screen.dart';
 import 'package:water_delivery/screens/admin_screen.dart';
 import 'package:water_delivery/screens/create_order_screen.dart';
 import 'package:water_delivery/screens/create_user_screen.dart';
@@ -119,6 +120,7 @@ class MyApp extends StatelessWidget {
           UserScreen.id : (context) => UserScreen(),
           CreateUserScreen.id : (context) => CreateUserScreen(),
           CreateOrderScreen.id : (context) => CreateOrderScreen(),
+          AddAddressScreen.id : (context) => AddAddressScreen(),
         },
       ),
     );
