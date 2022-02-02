@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
+//import 'package:provider/src/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
 
 class AddAddressScreen extends StatefulWidget {
@@ -18,14 +19,14 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   //late String addressName;
-  late String _townName;
-  late String _streetName;
-  late String _houseNumber;
-  late String _korpusNumber;
-  late String _sectionNumber;
-  late String _apartmentNumber;
-  late String _entranceNumber; //номер подъезда
-  late String _floorNumber;
+  String _townName = "";
+  String _streetName = "";
+  String _houseNumber = "";
+  String _korpusNumber = "";
+  String _sectionNumber = "";
+  String _apartmentNumber = "";
+  String _entranceNumber = ""; //номер подъезда
+  String _floorNumber = "";
   String _additionalInformAddress = ""; //дополнительная информация
 
   //final String photoAddressUrl = "gs://water-delivery-6ad8f.appspot.com/assets/660px-No-Image-Placeholder.svg.png";
@@ -72,7 +73,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
     super.dispose();
   }
 
-  _submit (BuildContext context) {
+  void _submit (BuildContext context) {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // это вызывает метод onsave в формах
@@ -215,7 +216,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                                 .requestFocus(_sectionNumberFocusNode);
                           },
                           onSaved: (value) {
-                            _korpusNumber = value!.trim();
+                            _korpusNumber = value?.trim() ?? "";
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -246,14 +247,14 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                                 .requestFocus(_apartmentNumberFocusNode);
                           },
                           onSaved: (value) {
-                            _sectionNumber = value!.trim();
+                            _sectionNumber = value?.trim() ?? "";
                           },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please, enter your street";
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value!.isEmpty) {
+                          //     return "Please, enter your street";
+                          //   }
+                          //   return null;
+                          // },
                         ),
                       ),
                     ),
@@ -282,7 +283,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                                 .requestFocus(_entranceNumberFocusNode);
                           },
                           onSaved: (value) {
-                            _apartmentNumber = value!.trim();
+                            _apartmentNumber = value?.trim() ?? "";
                           },
                           validator: (value) {
                             // if (value!.isEmpty) {
@@ -312,7 +313,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                                 .requestFocus(_floorNumberFocusNode);
                           },
                           onSaved: (value) {
-                            _entranceNumber = value!.trim();
+                            _entranceNumber = value?.trim() ?? "";
                           },
                           validator: (value) {
                             // if (value!.isEmpty) {
@@ -342,7 +343,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                                 .requestFocus(_additionalInformAddressFocusNode);
                           },
                           onSaved: (value) {
-                            _floorNumber = value!.trim();
+                            _floorNumber = value?.trim() ?? "";
                           },
                           validator: (value) {
                             // if (value!.isEmpty) {
@@ -370,7 +371,7 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                     _submit(context);
                   },
                   onSaved: (value) {
-                    _additionalInformAddress = value!.trim();
+                    _additionalInformAddress = value?.trim() ?? "";
                   },
                   validator: (value) {
 
@@ -378,8 +379,11 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                   },
                 ),
                 SizedBox(height: 15),
-                ElevatedButton(onPressed: _submit(context), child: Text("Create address delivery"))
-
+                ElevatedButton(
+                    onPressed: () {
+                      _submit (context);
+                    },
+                    child: Text("Create address delivery")),
               ],
             ),),
           ),
