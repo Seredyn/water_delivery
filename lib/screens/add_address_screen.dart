@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 //import 'package:provider/src/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
+import 'package:water_delivery/screens/user_screen.dart';
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({Key? key}) : super(key: key);
@@ -54,8 +55,6 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
     _floorNumberFocusNode = FocusNode();
     _additionalInformAddressFocusNode = FocusNode();
 
-    final String _addressOwnerID = currentUserId;
-
     super.initState();
   }
 
@@ -91,8 +90,10 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
         entranceNumber: _entranceNumber,
         floorNumber: _floorNumber,
         additionalInformAddress: _additionalInformAddress,
+      )
+          .then((value) => Navigator.of(context).pushReplacementNamed(UserScreen.id));
+          //.catchError(onError)
 
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error. Check all Text Fields')));
@@ -201,7 +202,6 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
                         child: TextFormField(
-                          initialValue: "-",
                           focusNode: _korpusNumberFocusNode,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
@@ -218,12 +218,12 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                           onSaved: (value) {
                             _korpusNumber = value?.trim() ?? "";
                           },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please, enter your korpus Number or check -";
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value!.isEmpty) {
+                          //     return "Please, enter your korpus Number or check -";
+                          //   }
+                          //   return null;
+                          // },
                         ),
                       ),
                     ),
@@ -232,7 +232,6 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
                         child: TextFormField(
-                          initialValue: "-",
                           focusNode: _sectionNumberFocusNode,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
@@ -366,7 +365,6 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                       ),
                       labelText: "Enter additional information"),
                   textInputAction: TextInputAction.done,
-                  //Кнопка далее на клавиатуре
                   onFieldSubmitted: (_) {
                     _submit(context);
                   },
@@ -384,6 +382,10 @@ class _AddAddressScreenState extends State<AddAddressScreen>  {
                       _submit (context);
                     },
                     child: Text("Create address delivery")),
+                SizedBox(height: 15),
+                OutlinedButton(onPressed: () {
+                  Navigator.pop(context);
+                }, child: Text("Cancel"))
               ],
             ),),
           ),

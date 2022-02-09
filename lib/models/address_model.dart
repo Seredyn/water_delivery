@@ -15,7 +15,7 @@ class Address {
   final String floorNumber;
   final String additionalInformAddress; //дополнительная информация
 
-  final String photoAddressUrl;
+  //final String photoAddressUrl;
 
   Address({
       required this.addressOwnerID,
@@ -30,7 +30,8 @@ class Address {
       required this.entranceNumber,
       required this.floorNumber,
       required this.additionalInformAddress,
-      required this.photoAddressUrl});
+      //required this.photoAddressUrl
+  });
 
 //final LatLng addressLatLng;
 

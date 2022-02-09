@@ -102,12 +102,6 @@ class AuthCubit extends Cubit<AuthState> {
       idToken: googleAuth?.idToken,
     );
 
-    // Map<String, dynamic> credentialParametersMap = credential.asMap();
-    // print("---------------------------------------------");
-    // print(credential);
-    // print("---------------------------------------------");
-    // print(credentialParametersMap);
-
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -175,20 +169,9 @@ class AuthCubit extends Cubit<AuthState> {
           .collection("users")
           .doc(addressOwnerID)
           .collection("addresses")
-          .add({
-        "addressOwnerID": addressOwnerID as String,
-        "addressName": addressName as String,
-        "townName": townName as String,
-        "streetName": streetName as String,
-        "houseNumber": houseNumber as String,
-        "korpusNumber": korpusNumber as String,
-        "sectionNumber": sectionNumber as String,
-        "apartmentNumber": apartmentNumber as String,
-        "entranceNumber": entranceNumber as String,
-        "floorNumber": floorNumber as String,
-        "additionalInformAddress": additionalInformAddress as String,
-      }).then((value) {
-        print("Address Added");
+          .add({})
+          .then((value) {
+        print("collection Address Added");
         FirebaseFirestore.instance
             .collection("users")
             .doc(addressOwnerID)
@@ -196,9 +179,20 @@ class AuthCubit extends Cubit<AuthState> {
             .doc(value.id)
             .set({
           "addressID": value.id as String,
+          "addressOwnerID": addressOwnerID as String,
+          "addressName": addressName as String,
+          "townName": townName as String,
+          "streetName": streetName as String,
+          "houseNumber": houseNumber as String,
+          "korpusNumber": korpusNumber as String,
+          "sectionNumber": sectionNumber as String,
+          "apartmentNumber": apartmentNumber as String,
+          "entranceNumber": entranceNumber as String,
+          "floorNumber": floorNumber as String,
+          "additionalInformAddress": additionalInformAddress as String,
         });
-        print("Address ID Updated");
-      }).catchError((error) => print("Failed to add address: $error"));;
+        print("Address field added");
+      }).catchError((error) => print("Failed to add address: $error"));
     } catch (e) {
       print("Some error hapens when address was added");
     }
