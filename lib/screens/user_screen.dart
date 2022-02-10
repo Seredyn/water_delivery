@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
-import 'package:water_delivery/models/address_model.dart';
 import 'package:water_delivery/screens/add_address_screen.dart';
 import 'package:water_delivery/screens/create_order_screen.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
@@ -38,8 +36,9 @@ class _UserScreenState extends State<UserScreen> {
     super.initState();
   }
 
+
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   String? userNameFromFirebaseAuth = FirebaseAuth.instance.currentUser
       ?.displayName;

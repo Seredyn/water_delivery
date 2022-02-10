@@ -45,7 +45,8 @@ class _SignInScreenState extends State<SignInScreen> {
       context.read<AuthCubit>().signInWithEmailAndPassword(
             email: _email,
             password: _password,
-          );
+          ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error. Check all Text Fields')));
@@ -55,6 +56,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _signInWithGoogle () async {
     try {
       await context.read<AuthCubit>().signInWithGoogle();
+
+      await context.read<AuthCubit>().navigateToScreenByRole(context);
 
     } catch (error) {
       print(error);
@@ -190,9 +193,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     FloatingActionButton.extended(onPressed: () async {
 
                       await _signInWithGoogle ();
-
-                      context.read<AuthCubit>().navigateToScreenByRole(context);
-
 
                     }, label: Text("Lod In With Google")),
                     SizedBox(height: 15,),

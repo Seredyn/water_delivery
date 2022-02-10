@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:water_delivery/screens/admin_screen.dart';
 import 'package:water_delivery/screens/user_screen.dart';
 
 part 'auth_state.dart';
@@ -133,44 +134,93 @@ class AuthCubit extends Cubit<AuthState> {
           "userID": FirebaseAuth.instance.currentUser!.uid,
           "name": _userName,
           "email": _userEmail,
-          "phoneNumber" : _phoneNumber,
+          "phoneNumber": _phoneNumber,
           "role": "customer",
         });
       }
 
-    // Once signed in, return the UserCredential После входа возвращаем UserCredential
-    return FirebaseAuth.instance.signInWithCredential(credential);
-
-    } );
-
+      // Once signed in, return the UserCredential После входа возвращаем UserCredential
+      return FirebaseAuth.instance.signInWithCredential(credential);
+    });
   }
 
-  navigateToScreenByRole (context) {
+  navigateToScreenByRole(context) async {
     //TODO:- create navigation for all users role
-      Navigator.of(context).pushReplacementNamed(UserScreen.id);
-    }
+    // await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .get()
+    //     .then((DocumentSnapshot documentSnapshot) {
+    //   if (documentSnapshot.exists) {
+    //     print('Document data: ${documentSnapshot.data()}');
+    //     String role = documentSnapshot.get("role");
+    //     print("role is: $role");
+    //     if (role == "admin") {
+    //       Navigator.of(context).pushReplacementNamed(AdminScreen.id);
+    //     }
+    //     if (role == "customer") {
+    //       Navigator.of(context).pushReplacementNamed(UserScreen.id);
+    //     }
+    //     if (role == "driver") {
+    //       //Navigator.of(context).pushReplacementNamed(DriverScreen.id);
+    //     }
+    //   } else {
+    //     print('Document does not exist on the database');
+    //     Navigator.of(context).pushReplacementNamed(UserScreen.id);
+    //   }
+    // });
+    Navigator.of(context).pushReplacementNamed(AdminScreen.id);
+  }
 
-  Future<void> addAddressDelivery ({
-    required String addressOwnerID,
-  required String addressName,
-  required String townName,
-  required String streetName,
-  required String houseNumber,
-  required String korpusNumber,
-  required String sectionNumber,
-  required String apartmentNumber,
-  required String entranceNumber, //номер подъезда
-  required String floorNumber,
-  required String additionalInformAddress,
+  Future<void> addProduct({
+    required String productName,
+    required String productDescription,
+    required String productSorting,
+    required String productCode,
+    required double productPrise,
 }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("products")
+          .add({})
+          .then((value) {
+            FirebaseFirestore.instance
+                .collection("products")
+                .doc(value.id)
+                .set({
+              "productID": value.id as String,
+              "productName": productName as String,
+              "productDescription": productDescription as String,
+              "productSorting": productSorting as String,
+              "productCode": productCode as String,
+              "productPrise": productPrise as double,
+              "productActive": true as bool,
+            });
+      }).catchError((error) => print("Failed to add new product: $error"));
+    } catch (e) {
+      print("Some error in addProduct()");
+    }
+  }
 
+  Future<void> addAddressDelivery({
+    required String addressOwnerID,
+    required String addressName,
+    required String townName,
+    required String streetName,
+    required String houseNumber,
+    required String korpusNumber,
+    required String sectionNumber,
+    required String apartmentNumber,
+    required String entranceNumber, //номер подъезда
+    required String floorNumber,
+    required String additionalInformAddress,
+  }) async {
     try {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(addressOwnerID)
           .collection("addresses")
-          .add({})
-          .then((value) {
+          .add({}).then((value) {
         print("collection Address Added");
         FirebaseFirestore.instance
             .collection("users")
@@ -196,7 +246,5 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       print("Some error hapens when address was added");
     }
-
   }
-
 }

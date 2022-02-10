@@ -5,10 +5,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:water_delivery/screens/add_address_screen.dart';
+import 'package:water_delivery/screens/add_product_screen.dart';
 import 'package:water_delivery/screens/admin_screen.dart';
 import 'package:water_delivery/screens/create_order_screen.dart';
 import 'package:water_delivery/screens/create_user_screen.dart';
 import 'package:water_delivery/screens/driver_screen.dart';
+import 'package:water_delivery/screens/manage_products_screen.dart';
 import 'package:water_delivery/screens/my_home_page.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
 import 'package:water_delivery/screens/sign_up_screen.dart';
@@ -121,6 +123,8 @@ class MyApp extends StatelessWidget {
           CreateUserScreen.id : (context) => CreateUserScreen(),
           CreateOrderScreen.id : (context) => CreateOrderScreen(),
           AddAddressScreen.id : (context) => AddAddressScreen(),
+          ManageProductsScreen.id : (context) => ManageProductsScreen(),
+          AddProductScreen.id : (context) => AddProductScreen(),
         },
       ),
     );

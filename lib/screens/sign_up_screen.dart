@@ -39,7 +39,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _submit(BuildContext context) {
+  void _submit(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // это вызывает метод onsave в формах
@@ -49,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             name: _name,
             email: _email,
             password: _password,
-          );
+          ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error. Check all Text Fields')));
