@@ -178,24 +178,20 @@ class AuthCubit extends Cubit<AuthState> {
     required String productSorting,
     required String productCode,
     required double productPrise,
-}) async {
+  }) async {
     try {
       await FirebaseFirestore.instance
           .collection("products")
-          .add({})
-          .then((value) {
-            FirebaseFirestore.instance
-                .collection("products")
-                .doc(value.id)
-                .set({
-              "productID": value.id as String,
-              "productName": productName as String,
-              "productDescription": productDescription as String,
-              "productSorting": productSorting as String,
-              "productCode": productCode as String,
-              "productPrise": productPrise as double,
-              "productActive": true as bool,
-            });
+          .add({}).then((value) {
+        FirebaseFirestore.instance.collection("products").doc(value.id).set({
+          "productID": value.id as String,
+          "productName": productName as String,
+          "productDescription": productDescription as String,
+          "productSorting": productSorting as String,
+          "productCode": productCode as String,
+          "productPrise": productPrise as double,
+          "productActive": true as bool,
+        });
       }).catchError((error) => print("Failed to add new product: $error"));
     } catch (e) {
       print("Some error in addProduct()");
@@ -245,6 +241,36 @@ class AuthCubit extends Cubit<AuthState> {
       }).catchError((error) => print("Failed to add address: $error"));
     } catch (e) {
       print("Some error hapens when address was added");
+    }
+  }
+
+  Future<void> deactivateProduct({
+    required String productID,
+  }) async {
+    try {
+      FirebaseFirestore.instance
+          .collection("products")
+          .doc(productID)
+          .update({"productActive": false as bool})
+          .then((value) => print("Product deactivated"))
+          .catchError((error) => print("Can't deactivated product: $error"));
+    } catch (e) {
+      print("Error when try deactivate product");
+    }
+  }
+
+  Future<void> activateProduct({
+    required String productID,
+  }) async {
+    try {
+      FirebaseFirestore.instance
+          .collection("products")
+          .doc(productID)
+          .update({"productActive": true as bool})
+          .then((value) => print("Product activated"))
+          .catchError((error) => print("Can't activated product: $error"));
+    } catch (e) {
+      print("Error when try activate product");
     }
   }
 }

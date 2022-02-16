@@ -87,7 +87,6 @@ class _UserScreenState extends State<UserScreen> {
                 SizedBox(height: 15,),
                 StreamBuilder<QuerySnapshot>(
                     stream: _addressStream,
-
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return Center(
@@ -100,7 +99,6 @@ class _UserScreenState extends State<UserScreen> {
                           child: Text("Loading..."),
                         );
                       }
-
                       return Container(
                         height: 180,
                         child: ListView.builder(
