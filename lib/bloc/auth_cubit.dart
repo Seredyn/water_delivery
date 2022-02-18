@@ -169,7 +169,7 @@ class AuthCubit extends Cubit<AuthState> {
     //     Navigator.of(context).pushReplacementNamed(UserScreen.id);
     //   }
     // });
-    Navigator.of(context).pushReplacementNamed(AdminScreen.id);
+    Navigator.of(context).pushReplacementNamed(UserScreen.id);
   }
 
   Future<void> addProduct({

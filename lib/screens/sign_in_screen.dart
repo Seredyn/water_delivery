@@ -53,6 +53,26 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  //TODO:- Delete sign in like test user
+  void _signInLikeTest1 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+      email: "test1@gmail.com",
+      password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+  void _signInLikeTest2 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+        email: "test2@gmail.com",
+        password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+  void _signInLikeTest3 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+        email: "test3@gmail.com",
+        password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+
   Future<void> _signInWithGoogle () async {
     try {
       await context.read<AuthCubit>().signInWithGoogle();
@@ -166,7 +186,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: const EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  //TODO:- Sign In as test1
+                                  _signInLikeTest1();
                                 },
                                 child: Text("Test1")),
                           ),
@@ -174,7 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  //TODO:- Sign In as test2
+                                  _signInLikeTest2();
                                 },
                                 child: Text("Test2")),
                           ),
@@ -182,7 +202,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  //TODO:- Sign In as test3
+                                  _signInLikeTest3();
                                 },
                                 child: Text("Test3")),
                           ),
