@@ -127,9 +127,7 @@ class _UserScreenState extends State<UserScreen> {
                               }),
                         );
                       }),
-                  SizedBox(
-                    height: 15,
-                  ),
+                  SizedBox(height: 15,),
                   ElevatedButton(
                       onPressed: () async {
                         await _goToAddAddressScreen();

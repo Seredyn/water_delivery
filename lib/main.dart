@@ -12,6 +12,7 @@ import 'package:water_delivery/screens/create_user_screen.dart';
 import 'package:water_delivery/screens/driver_screen.dart';
 import 'package:water_delivery/screens/manage_products_screen.dart';
 import 'package:water_delivery/screens/my_home_page.dart';
+import 'package:water_delivery/screens/select_address_delivery.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
 import 'package:water_delivery/screens/sign_up_screen.dart';
 import 'package:water_delivery/screens/user_screen.dart';
@@ -125,6 +126,7 @@ class MyApp extends StatelessWidget {
           AddAddressScreen.id : (context) => AddAddressScreen(),
           ManageProductsScreen.id : (context) => ManageProductsScreen(),
           AddProductScreen.id : (context) => AddProductScreen(),
+          SelectionAddressDeliveryScreen.id : (context) => SelectionAddressDeliveryScreen(),
         },
       ),
     );
