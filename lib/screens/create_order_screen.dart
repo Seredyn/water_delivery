@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:water_delivery/screens/select_address_delivery.dart';
+import 'package:water_delivery/screens/select_product_id_screen.dart';
 
 class CreateOrderScreen extends StatefulWidget {
   const CreateOrderScreen({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late String currentUserId;
   late String addressName;
   late String checkedProductID;
+  late String productName;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     currentUserId = FirebaseAuth.instance.currentUser!.uid;
     addressName = "";
     checkedProductID = "";
+    productName = "";
 
     super.initState();//super.initState() обязательно нужно вызывать
   }
@@ -43,7 +46,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
     ScaffoldMessenger.of(context)
       ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('$result')));
+      ..showSnackBar(SnackBar(content: Text('Address: $result')));
 
     checkedAddressID = result;
 
@@ -62,7 +65,20 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 
   void _navigateAndGetProductID (BuildContext context) async {
-    final String result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionProductIDScreen()))
+    final String result = await Navigator.push(context, MaterialPageRoute(
+        builder: (context) => SelectionProductIDScreen()));
+
+    checkedProductID = result;
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('Product: $result')));
+
+    await FirebaseFirestore.instance.collection("products").doc(checkedProductID).get().then((value) {
+      setState(() {
+        productName = value.get("productName");
+      });
+    });
   }
 
 
@@ -101,20 +117,20 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               SizedBox(height: 30,),
               Container(
-                child: checkedAddressID == ""
+                child: checkedProductID == ""
                     ? Text("Выберите товар:",
                     style: Theme.of(context).textTheme.headline5)
                     : Text("Выбранный товар:",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, )),
               ),
-              Text(addressName, style: TextStyle(fontSize: 26,),),
+              Text(productName, style: TextStyle(fontSize: 26,),),
               SizedBox(height: 10,),
               ElevatedButton(
-                child: checkedAddressID == ""
-                    ? Text("Выбрать адрес")
-                    : Text("Изменить адрес"),
+                child: checkedProductID == ""
+                    ? Text("Выбрать товар")
+                    : Text("Изменить товар"),
                 onPressed: () {
-                  _navigateAndGetAddressDelivery(context);
+                  _navigateAndGetProductID (context);
                 },
               ),
               SizedBox(height: 30,),
