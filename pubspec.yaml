@@ -43,6 +43,7 @@ dependencies:
   latlong2: ^0.8.1
   geolocator: ^8.0.3
   google_sign_in: ^5.2.3
+  date_time_picker: ^2.1.0
 
 dev_dependencies:
   flutter_test:
