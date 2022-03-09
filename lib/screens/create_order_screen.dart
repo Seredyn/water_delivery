@@ -665,6 +665,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             _valueToValidateToParseDateTimeFinish = _valueToValidateDate + " " + _valueToValidateTimeFinish;
                             DateTime validateDateTimeStart = DateTime.parse(_valueToValidateToParseDateTimeStart);
                             DateTime validateDateTimeFinish = DateTime.parse(_valueToValidateToParseDateTimeFinish);
+                            if (validateDateTimeFinish.hour > 21) {
+                              return "слишком позднее время";
+                            }
                             if (validateDateTimeFinish.isBefore(validateDateTimeStart) || validateDateTimeFinish.isAtSameMomentAs(validateDateTimeStart)){
                               return "укажите время поздее начала ожидания";
                             }
