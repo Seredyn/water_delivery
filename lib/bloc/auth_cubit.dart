@@ -198,6 +198,40 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> addOrderToFirebase({
+    required String orderClientID,
+    required String orderProductID,
+    required String orderDeliveryAddressID,
+    required double orderPrise,
+    required Timestamp orderDeliveryStartTimeStamp,
+    required Timestamp orderDeliveryFinishTimeStamp,
+
+}) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("orders")
+          .add({}).then((value) {
+            print("order begin Writing");
+            FirebaseFirestore.instance
+                .collection("orders")
+            .doc(value.id)
+            .set({
+              "orderID": value.id as String,
+              "orderClientID": orderClientID as String,
+              "orderProductID": orderProductID as String,
+              "orderDeliveryAddressID": orderDeliveryAddressID as String,
+              "orderPrise": orderPrise as double,
+              "orderCreateTimeStamp": Timestamp.now(),
+              "orderDeliveryStartTimeStamp": orderDeliveryStartTimeStamp,
+              "orderDeliveryFinishTimeStamp": orderDeliveryFinishTimeStamp,
+            });
+            print("Order was added to Firebase");
+      }).catchError((error) => print("Failed to add Order: $error"));
+    } catch (e) {
+      print("Some error hapens when Order was added");
+    }
+  }
+
   Future<void> addAddressDelivery({
     required String addressOwnerID,
     required String addressName,

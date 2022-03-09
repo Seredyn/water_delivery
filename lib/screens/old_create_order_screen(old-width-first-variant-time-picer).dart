@@ -3,15 +3,11 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:water_delivery/screens/select_address_delivery.dart';
 import 'package:water_delivery/screens/select_product_id_screen.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:water_delivery/screens/user_screen.dart';
 
 class CreateOrderScreen extends StatefulWidget {
   const CreateOrderScreen({Key? key}) : super(key: key);
@@ -26,6 +22,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   //Тут объявляются динамические переменные
 
   final GlobalKey<FormState> _myFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late String checkedAddressID;
   late String currentUserId;
@@ -35,6 +32,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late int quantity;
   late double productPrise;
   late double orderPrise;
+
+  late List<String> waitingTimeHourStartList;
+  late List<String> waitingTimeMinutesStartList;
+  late List<String> waitingTimeHourFinishList;
+  late List<String> waitingTimeMinutesFinishList;
+
+  //late Map<DropdownMenuItem<int>> waitingTimeHourMap;
 
   late DateTime nowTime;
 
@@ -48,6 +52,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late String currentWaitingTimeMinutesStart;
   late String currentWaitingTimeHourFinish;
   late String currentWaitingTimeMinutesFinish;
+
+
 
   late TextEditingController _controller1;
   late TextEditingController _controller2;
@@ -113,16 +119,46 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     productPrise = 0.0;
     orderPrise = 0.0;
 
+    waitingTimeHourStartList = [
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20"
+    ];
+    waitingTimeMinutesStartList = ["00", "15", "30", "45"];
+
+    waitingTimeHourFinishList = waitingTimeHourStartList;
+    waitingTimeMinutesFinishList = waitingTimeMinutesStartList;
+
     nowTime = DateTime.now();
     waitingTimeFrom = nowTime;
     waitingTimeTo = waitingTimeFrom.add(const Duration(hours: 3));
 
+    currentWaitingTimeHourStart = waitingTimeHourStartList[0];
+    currentWaitingTimeMinutesStart = waitingTimeMinutesStartList[0];
+    currentWaitingTimeHourFinish = waitingTimeHourStartList.last;
+    currentWaitingTimeMinutesFinish = waitingTimeMinutesStartList.last;
+
+
+
     initializeDateFormatting('uk_UK', null);
     Intl.defaultLocale = 'uk_UK';
+    //_initialValue = DateTime.now().toString();
+    _controller1 = TextEditingController(text: DateTime.now().toString());
+    _controller2 = TextEditingController(text: DateTime.now().toString());
+    _controller3 = TextEditingController(text: DateTime.now().toString());
 
-    // String lsHour = TimeOfDay.now().hour.toString().padLeft(2, '0');
-    // String lsMinute = TimeOfDay.now().minute.toString().padLeft(2, '0');
-    // _controller4 = TextEditingController(text: '$lsHour:$lsMinute');
+    String lsHour = TimeOfDay.now().hour.toString().padLeft(2, '0');
+    String lsMinute = TimeOfDay.now().minute.toString().padLeft(2, '0');
+    _controller4 = TextEditingController(text: '$lsHour:$lsMinute');
 
     _myControllerData = TextEditingController(text: DateTime.now().weekday == DateTime.sunday ? DateTime.now().add(Duration(days: 1)).toString() : DateTime.now().toString());
     _myControllerTimeStart = TextEditingController(text: '09:00');
@@ -139,7 +175,23 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       lastDateInForm = DateTime.now().add(Duration(days: 2));
     }
 
+    _getValue();
   }
+
+  Future<void> _getValue() async {
+    await Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        //_initialValue = '2000-10-22 14:30';
+        _controller1.text = '2000-09-20 14:30';
+        _controller2.text = '2001-10-21 15:31';
+        _controller3.text = '2002-11-22';
+        _controller4.text = '17:01';
+        _myControllerTimeStart.text = '09;00';
+      });
+    });
+  }
+
+  void _checkTimeToDelivery() {}
 
   void _navigateAndGetAddressDelivery(BuildContext context) async {
     // Navigator.push returns a Future that completes after calling
@@ -201,42 +253,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     });
   }
 
-  void _submitFormOrder () {
-    if (_myFormKey.currentState!.validate()) {
-      _myFormKey.currentState!.save();
-
-      _createOrder (context);
-
-    } else {
-      ScaffoldMessenger.of(context)..removeCurrentSnackBar()..showSnackBar(const SnackBar(content: Text("Ошибка в форме, проверьте все поля")));
-    }
-  }
-
-  void _createOrder (BuildContext context){
-    if (currentUserId == "") {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Возникла ошибка. Необходимо заново зайти в приложение")));
-      return;
-    }
-    if (checkedAddressID == "") {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Выберите адрес доставки")));
-      return;
-    }
-    if (checkedProductID == "") {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Выберите товар")));
-      return;
-    }
-    context.read<AuthCubit>().addOrderToFirebase(
-      orderClientID: currentUserId,
-      orderProductID: checkedProductID,
-      orderDeliveryAddressID: checkedAddressID,
-      orderPrise: orderPrise,
-      orderDeliveryStartTimeStamp: Timestamp.fromDate(DateTime.parse(_valueToValidateToParseDateTimeStart)),
-      orderDeliveryFinishTimeStamp: Timestamp.fromDate(DateTime.parse(_valueToValidateToParseDateTimeFinish)),
-    ).then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Заказ отправлен в обработку")));
-      Navigator.of(context).pushReplacementNamed(UserScreen.id);
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -405,13 +421,177 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 SizedBox(
                   height: 30,
                 ),
-                Text("Сегодня/Завтра"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "C",
+                        style: TextStyle(fontSize: 23),
+                      ),
+                    ),
+                    Container(
+                      child: Row(
+                        children: [
+                          DropdownButton<String>(
+                            value: currentWaitingTimeHourStart,
+                            icon: Icon(Icons.arrow_downward),
+                            style: TextStyle(fontSize: 23, color: Colors.indigo),
+                            iconSize: 20,
+                            elevation: 16,
+                            underline: Container(
+                              height: 2,
+                              color: Colors.indigo,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                currentWaitingTimeHourStart = newValue!;
+                                // waitingTimeHourFinishList.clear();
+                                // for (int i = int.parse(currentWaitingTimeHourStart) + 2; i <= 19; i++) {
+                                //   waitingTimeHourFinishList.add(i.toString());
+                                // }
+                                // currentWaitingTimeHourFinish = waitingTimeHourFinishList[0];
+                              });
+                            },
+                            items: waitingTimeHourStartList
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              ":",
+                              style:
+                                  TextStyle(fontSize: 23, color: Colors.indigo),
+                            ),
+                          ),
+                          DropdownButton<String>(
+                            value: currentWaitingTimeMinutesStart,
+                            icon: Icon(Icons.arrow_downward),
+                            style: TextStyle(fontSize: 23, color: Colors.indigo),
+                            iconSize: 20,
+                            elevation: 16,
+                            underline: Container(
+                              height: 2,
+                              color: Colors.indigo,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                currentWaitingTimeMinutesStart = newValue!;
+                              });
+                            },
+                            items: waitingTimeMinutesStartList
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "ДО",
+                        style: TextStyle(fontSize: 23),
+                      ),
+                    ),
+                    Container(
+                      child: Row(
+                        children: [
+                          DropdownButton<String>(
+                            value: currentWaitingTimeHourFinish,
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 20,
+                            style: TextStyle(fontSize: 23, color: Colors.indigo),
+                            elevation: 16,
+                            underline: Container(
+                              height: 2,
+                              color: Colors.indigo,
+                            ),
+                            onChanged: (String? newValue) {
+                              int check =
+                                  int.parse(currentWaitingTimeHourFinish) -
+                                      int.parse(currentWaitingTimeHourStart);
+                              if (check < 2) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "Время ожидания должно быть более 2-х часов")));
+                                setState(() {
+                                  currentWaitingTimeHourFinish =
+                                      (int.parse(currentWaitingTimeHourStart) + 2)
+                                          .toString();
+                                });
+                              } else {
+                                setState(() {
+                                  currentWaitingTimeHourFinish = newValue!;
+                                });
+                              }
+                            },
+                            items: waitingTimeHourFinishList
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              ":",
+                              style:
+                                  TextStyle(fontSize: 23, color: Colors.indigo),
+                            ),
+                          ),
+                          DropdownButton<String>(
+                            value: currentWaitingTimeMinutesFinish,
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 20,
+                            style: TextStyle(fontSize: 23, color: Colors.indigo),
+                            elevation: 16,
+                            underline: Container(
+                              height: 2,
+                              color: Colors.indigo,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                currentWaitingTimeMinutesFinish = newValue!;
+                              });
+                            },
+                            items: waitingTimeMinutesStartList
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                Text("Время доставки Вариант 2:",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    )),
+
                 Form(
                   key: _myFormKey,
                   child: Column(children: [
                     DateTimePicker(
                       type: DateTimePickerType.date,
-                      dateMask: 'dd MMMM yyyy',
+                      //dateMask: 'dd/MM/yyyy',
                       //controller: _myControllerData,
                       initialValue: _initialDateValue,
                       firstDate: firstDateInForm,
@@ -487,7 +667,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             DateTime validateDateTimeFinish = DateTime.parse(_valueToValidateToParseDateTimeFinish);
                             if (validateDateTimeFinish.hour > 21) {
                               return "слишком позднее время";
-
                             }
                             if (validateDateTimeFinish.isBefore(validateDateTimeStart) || validateDateTimeFinish.isAtSameMomentAs(validateDateTimeStart)){
                               return "укажите время поздее начала ожидания";
@@ -508,7 +687,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                     ],),
                     ElevatedButton(
-                      onPressed: _submitFormOrder,
+                      onPressed: () {
+                        final loForm = _myFormKey.currentState;
+
+                        if (loForm?.validate() == true) {
+                          loForm?.save();
+                        }
+                      },
                       child: Text('Submit'),
                     ),
                     Text("_valueToValidateToParseDateTimeStart:$_valueToValidateToParseDateTimeStart"),
@@ -516,13 +701,224 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     Text("_initialDateValue:$_initialDateValue"),
                     Text("_valueToParseDateTimeStart:$_valueToParseDateTimeStart"),
                     Text("_valueChangedToParseDateTimeStart:$_valueChangedToParseDateTimeStart"),
+                    Text("Changed"),
+                    Text("$_valueChangedDate $_valueChangedTimeStart"),
+                    Text("$_valueChangedDate $_valueChangedTimeFinish"),
+                    Text("Validate"),
+                    Text("$_valueToValidateDate, $_valueToValidateTimeStart"),
+                    Text("$_valueToValidateDate, $_valueToValidateTimeFinish"),
+                    Text("Saved"),
+                    Text("$_valueToValidateDate, $_valueToValidateTimeStart"),
+                    Text("$_valueToValidateDate, $_valueToValidateTimeFinish"),
                     SizedBox(height: 20,),
+                    DateTimePicker(
+                      type: DateTimePickerType.time,
+                      //timePickerEntryModeInput: true,
+                      //controller: _controller4,
+                      initialValue: '',
+                      //_initialValue,
+                      icon: Icon(Icons.access_time),
+                      timeLabelText: "Время",
+                      //use24HourFormat: false,
+                      locale: Locale('uk', 'UA'),
+                      onChanged: (val) => setState(() => _valueChanged4 = val),
+                      validator: (val) {
+                        setState(() => _valueToValidate4 = val ?? '');
+                        return null;
+                      },
+                      onSaved: (val) =>
+                          setState(() => _valueSaved4 = val ?? ''),
+                    ),
                     ],
                   ),
                 ),
+
+
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      DateTimePicker(
+                        type: DateTimePickerType.dateTimeSeparate,
+                        dateMask: 'd MMM, yyyy',
+                        controller: _controller1,
+                        //initialValue: _initialValue,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                        icon: Icon(Icons.event),
+                        dateLabelText: 'Date',
+                        timeLabelText: "Hour",
+                        //use24HourFormat: false,
+                        //locale: Locale('pt', 'BR'),
+                        selectableDayPredicate: (date) {
+                          if (date.weekday == 6 || date.weekday == 7) {
+                            return false;
+                          }
+                          return true;
+                        },
+                        onChanged: (val) => setState(() => _valueChanged1 = val),
+                        validator: (val) {
+                          setState(() => _valueToValidate1 = val ?? '');
+                          return null;
+                        },
+                        onSaved: (val) =>
+                            setState(() => _valueSaved1 = val ?? ''),
+                      ),
+                      DateTimePicker(
+                        type: DateTimePickerType.dateTime,
+                        dateMask: 'd MMMM, yyyy - hh:mm a',
+                        controller: _controller2,
+                        //initialValue: _initialValue,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                        //icon: Icon(Icons.event),
+                        dateLabelText: 'Date Time',
+                        use24HourFormat: false,
+                        locale: Locale('en', 'US'),
+                        onChanged: (val) => setState(() => _valueChanged2 = val),
+                        validator: (val) {
+                          setState(() => _valueToValidate2 = val ?? '');
+                          return null;
+                        },
+                        onSaved: (val) =>
+                            setState(() => _valueSaved2 = val ?? ''),
+                      ),
+                      DateTimePicker(
+                        type: DateTimePickerType.date,
+                        //dateMask: 'yyyy/MM/dd',
+                        controller: _controller3,
+                        //initialValue: _initialValue,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                        icon: Icon(Icons.event),
+                        dateLabelText: 'Date',
+                        locale: Locale('pt', 'BR'),
+                        onChanged: (val) => setState(() => _valueChanged3 = val),
+                        validator: (val) {
+                          setState(() => _valueToValidate3 = val ?? '');
+                          return null;
+                        },
+                        onSaved: (val) =>
+                            setState(() => _valueSaved3 = val ?? ''),
+                      ),
+                      DateTimePicker(
+                        type: DateTimePickerType.time,
+                        //timePickerEntryModeInput: true,
+                        //controller: _controller4,
+                        initialValue: '',
+                        //_initialValue,
+                        icon: Icon(Icons.access_time),
+                        timeLabelText: "Time",
+                        use24HourFormat: false,
+                        locale: Locale('pt', 'BR'),
+                        onChanged: (val) => setState(() => _valueChanged4 = val),
+                        validator: (val) {
+                          setState(() => _valueToValidate4 = val ?? '');
+                          return null;
+                        },
+                        onSaved: (val) =>
+                            setState(() => _valueSaved4 = val ?? ''),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'DateTimePicker data value onChanged:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      SelectableText(_valueChanged1),
+                      SelectableText(_valueChanged2),
+                      SelectableText(_valueChanged3),
+                      SelectableText(_valueChanged4),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          final loForm = _formKey.currentState;
+
+                          if (loForm?.validate() == true) {
+                            loForm?.save();
+                          }
+                        },
+                        child: Text('Submit'),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'DateTimePicker data value onChanged:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      SelectableText(_valueChanged1),
+                      SelectableText(_valueChanged2),
+                      SelectableText(_valueChanged3),
+                      SelectableText(_valueChanged4),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          final loForm = _formKey.currentState;
+
+                          if (loForm?.validate() == true) {
+                            loForm?.save();
+                          }
+                        },
+                        child: Text('Submit'),
+                      ),
+                      SizedBox(height: 30),
+                      Text(
+                        'DateTimePicker data value validator:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      SelectableText(_valueToValidate1),
+                      SelectableText(_valueToValidate2),
+                      SelectableText(_valueToValidate3),
+                      SelectableText(_valueToValidate4),
+                      SizedBox(height: 10),
+                      Text(
+                        'DateTimePicker data value onSaved:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      SelectableText(_valueSaved1),
+                      SelectableText(_valueSaved2),
+                      SelectableText(_valueSaved3),
+                      SelectableText(_valueSaved4),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          final loForm = _formKey.currentState;
+                          loForm?.reset();
+
+                          setState(() {
+                            _valueChanged1 = '';
+                            _valueChanged2 = '';
+                            _valueChanged3 = '';
+                            _valueChanged4 = '';
+                            _valueToValidate1 = '';
+                            _valueToValidate2 = '';
+                            _valueToValidate3 = '';
+                            _valueToValidate4 = '';
+                            _valueSaved1 = '';
+                            _valueSaved2 = '';
+                            _valueSaved3 = '';
+                            _valueSaved4 = '';
+                          });
+
+                          _controller1.clear();
+                          _controller2.clear();
+                          _controller3.clear();
+                          _controller4.clear();
+                        },
+                        child: Text('Reset'),
+                      ),
+                    ],
+                  ),
+                ),
+
                 SizedBox(
                   height: 30,
                 ),
+                Text(
+                    "Water type <List> or Map with count. Возможность заказать несколько разных баллонов на один адресс"),
+                Text("Время ожидания доставки"),
                 FloatingActionButton.extended(
                   onPressed: () {},
                   label: Text("Confirm"),
