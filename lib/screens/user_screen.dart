@@ -38,6 +38,8 @@ class _UserScreenState extends State<UserScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
+  CollectionReference orders = FirebaseFirestore.instance.collection('orders');
+
   String? userNameFromFirebaseAuth =
       FirebaseAuth.instance.currentUser?.displayName;
   String? userNameFromFireStore;
@@ -49,6 +51,10 @@ class _UserScreenState extends State<UserScreen> {
 
     final Stream<QuerySnapshot> _addressStream =
         users.doc(currentUserId).collection("addresses").snapshots();
+    final Stream<QuerySnapshot> _ordersStream =
+    orders
+        .where('orderClientID', isEqualTo: currentUserId)
+        .snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -81,9 +87,7 @@ class _UserScreenState extends State<UserScreen> {
                     currentUserName,
                     style: Theme.of(context).textTheme.headline4,
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
+                  SizedBox(height: 15,),
                   StreamBuilder<QuerySnapshot>(
                       stream: _addressStream,
                       builder: (context, snapshot) {
@@ -124,6 +128,48 @@ class _UserScreenState extends State<UserScreen> {
                                       ", " +
                                       doc.get("apartmentNumber")),
                                 );
+                              }),
+                        );
+                      }),
+                  SizedBox(height: 15,),
+                  Text("Ваши заказы",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: _ordersStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text("snapshot has error"),
+                          );
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting ||
+                            snapshot.connectionState == ConnectionState.none) {
+                          return Center(
+                            child: Text("Loading..."),
+                          );
+                        }
+                        if (snapshot.data?.docs.length == 0) {
+                          return Column(
+                            children: [
+                              Text("Нет заказов для показа"),
+                              Text("Создайте заказ"),
+                            ],
+                          );
+                        }
+                        return Container(
+                          height: 180,
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data?.docs.length ?? 0,
+                              itemBuilder: (context, index) {
+                                final DocumentSnapshot doc =
+                                snapshot.data!.docs[index];
+
+                                return ListTile(
+                                  leading: Icon(Icons.add_shopping_cart_sharp),
+                                  title: Text((doc.get("orderCreateTimeStamp").toString())));
                               }),
                         );
                       }),

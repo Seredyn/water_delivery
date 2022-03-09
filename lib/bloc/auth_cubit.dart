@@ -207,19 +207,39 @@ class AuthCubit extends Cubit<AuthState> {
     required Timestamp orderDeliveryFinishTimeStamp,
 
 }) async {
+    int _orderNumber = 0;
+    Stream documentStream = FirebaseFirestore.instance.collection('settings').doc('orderSettings').snapshots();
+    //int orderNumber = documentStream.
+    FirebaseFirestore.instance
+        .collection('settings')
+        .doc('orderSettings')
+        .get().then((value) {
+      _orderNumber = value.get("lastOrderNumber") + 1;
+    }).then((value) {
+      FirebaseFirestore.instance
+          .collection('settings')
+          .doc('orderSettings')
+          .set({
+        "lastOrderNumber": _orderNumber as int,
+      });
+    });
+
     try {
       await FirebaseFirestore.instance
           .collection("orders")
           .add({}).then((value) {
             print("order begin Writing");
+
             FirebaseFirestore.instance
                 .collection("orders")
             .doc(value.id)
             .set({
+              "orderNumber": _orderNumber as int,
               "orderID": value.id as String,
               "orderClientID": orderClientID as String,
               "orderProductID": orderProductID as String,
               "orderDeliveryAddressID": orderDeliveryAddressID as String,
+              "orderStatus": "new" as String,
               "orderPrise": orderPrise as double,
               "orderCreateTimeStamp": Timestamp.now(),
               "orderDeliveryStartTimeStamp": orderDeliveryStartTimeStamp,
