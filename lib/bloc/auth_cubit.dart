@@ -146,30 +146,30 @@ class AuthCubit extends Cubit<AuthState> {
 
   navigateToScreenByRole(context) async {
     //TODO:- create navigation for all users role
-    // await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(FirebaseAuth.instance.currentUser!.uid)
-    //     .get()
-    //     .then((DocumentSnapshot documentSnapshot) {
-    //   if (documentSnapshot.exists) {
-    //     print('Document data: ${documentSnapshot.data()}');
-    //     String role = documentSnapshot.get("role");
-    //     print("role is: $role");
-    //     if (role == "admin") {
-    //       Navigator.of(context).pushReplacementNamed(AdminScreen.id);
-    //     }
-    //     if (role == "customer") {
-    //       Navigator.of(context).pushReplacementNamed(UserScreen.id);
-    //     }
-    //     if (role == "driver") {
-    //       //Navigator.of(context).pushReplacementNamed(DriverScreen.id);
-    //     }
-    //   } else {
-    //     print('Document does not exist on the database');
-    //     Navigator.of(context).pushReplacementNamed(UserScreen.id);
-    //   }
-    // });
-    Navigator.of(context).pushReplacementNamed(UserScreen.id);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print('Document data: ${documentSnapshot.data()}');
+        String role = documentSnapshot.get("role");
+        print("role is: $role");
+        if (role == "admin") {
+          Navigator.of(context).pushReplacementNamed(AdminScreen.id);
+        }
+        if (role == "customer") {
+          Navigator.of(context).pushReplacementNamed(UserScreen.id);
+        }
+        if (role == "driver") {
+          //Navigator.of(context).pushReplacementNamed(DriverScreen.id);
+        }
+      } else {
+        print('Document does not exist on the database');
+        Navigator.of(context).pushReplacementNamed(UserScreen.id);
+      }
+    });
+    //Navigator.of(context).pushReplacementNamed(UserScreen.id);
   }
 
   Future<void> addProduct({

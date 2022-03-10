@@ -77,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       await context.read<AuthCubit>().signInWithGoogle();
 
-      await context.read<AuthCubit>().navigateToScreenByRole(context);
+      //await context.read<AuthCubit>().navigateToScreenByRole(context);
 
     } catch (error) {
       print(error);

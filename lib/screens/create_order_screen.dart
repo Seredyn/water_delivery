@@ -129,7 +129,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     _initialDateValue = nowTime.year.toString().padLeft(2, '0') + "-" + nowTime.month.toString().padLeft(2, '0') + "-" + nowTime.day.toString().padLeft(2, '0');
 
     //Меняем firstDateInForm и _initialDateValue если сейчас воскресенье или уже более 19 часов
-    if (DateTime.now().weekday == 7 || DateTime.now().hour > 19) {
+    if (DateTime.now().weekday == 7 || DateTime.now().hour > 18) {
       firstDateInForm = DateTime.now().add(Duration(days: 1));
       DateTime nowTimePlusOneDay = DateTime.now().add(Duration(days: 1));
       _initialDateValue = nowTimePlusOneDay.year.toString().padLeft(2, '0') + "-" + nowTimePlusOneDay.month.toString().padLeft(2, '0') + "-" + nowTimePlusOneDay.day.toString().padLeft(2, '0');

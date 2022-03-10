@@ -54,6 +54,7 @@ class _UserScreenState extends State<UserScreen> {
     final Stream<QuerySnapshot> _ordersStream =
     orders
         .where('orderClientID', isEqualTo: currentUserId)
+        //.limitToLast(3)
         .snapshots();
 
     return Scaffold(
@@ -88,6 +89,9 @@ class _UserScreenState extends State<UserScreen> {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                   SizedBox(height: 15,),
+                  Text("Ваши адреса",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                   StreamBuilder<QuerySnapshot>(
                       stream: _addressStream,
                       builder: (context, snapshot) {
@@ -111,28 +115,25 @@ class _UserScreenState extends State<UserScreen> {
                             ],
                           );
                         }
-                        return Container(
-                          height: 180,
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data?.docs.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final DocumentSnapshot doc =
-                                    snapshot.data!.docs[index];
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data?.docs.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final DocumentSnapshot doc =
+                                  snapshot.data!.docs[index];
 
-                                return ListTile(
-                                  leading: Icon(Icons.map),
-                                  title: Text(doc.get("streetName") +
-                                      ", " +
-                                      doc.get("houseNumber") +
-                                      ", " +
-                                      doc.get("apartmentNumber")),
-                                );
-                              }),
-                        );
+                              return ListTile(
+                                leading: Icon(Icons.map),
+                                title: Text(doc.get("streetName") +
+                                    ", " +
+                                    doc.get("houseNumber") +
+                                    ", " +
+                                    doc.get("apartmentNumber")),
+                              );
+                            });
                       }),
                   SizedBox(height: 15,),
-                  Text("Ваши заказы",
+                  Text("Последние заказы",
                     style: Theme.of(context).textTheme.headline4,
                   ),
                   StreamBuilder<QuerySnapshot>(
@@ -158,20 +159,17 @@ class _UserScreenState extends State<UserScreen> {
                             ],
                           );
                         }
-                        return Container(
-                          height: 180,
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data?.docs.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final DocumentSnapshot doc =
-                                snapshot.data!.docs[index];
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data?.docs.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final DocumentSnapshot doc =
+                              snapshot.data!.docs[index];
 
-                                return ListTile(
-                                  leading: Icon(Icons.add_shopping_cart_sharp),
-                                  title: Text((doc.get("orderCreateTimeStamp").toString())));
-                              }),
-                        );
+                              return ListTile(
+                                leading: Icon(Icons.add_shopping_cart_sharp),
+                                title: Text((doc.get("orderCreateTimeStamp").toString())));
+                            });
                       }),
                   SizedBox(height: 15,),
                   ElevatedButton(
