@@ -201,6 +201,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> addOrderToFirebase({
     required String orderClientID,
     required String orderProductID,
+    required int orderProductQuantity,
     required String orderDeliveryAddressID,
     required double orderPrise,
     required Timestamp orderDeliveryStartTimeStamp,
@@ -238,6 +239,7 @@ class AuthCubit extends Cubit<AuthState> {
               "orderID": value.id as String,
               "orderClientID": orderClientID as String,
               "orderProductID": orderProductID as String,
+              "orderProductQuantity": orderProductQuantity as int,
               "orderDeliveryAddressID": orderDeliveryAddressID as String,
               "orderStatus": "new" as String,
               "orderPrise": orderPrise as double,
@@ -326,5 +328,21 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       print("Error when try activate product");
     }
+  }
+  
+  Future<void> confirmOrderAndSendToDriver ({
+  required String orderID,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("orders")
+          .doc(orderID)
+          .update({"orderStatus": "confirmed"})
+          .then((value) => print("order confirmed"))
+          .catchError((error) => print ("This error $error was occurred, when order status try cinfirmed"));
+    } catch (e) {
+      print ("Error: $e was occurred when confirmOrderAndSendToDriver()");
+    }
+
   }
 }

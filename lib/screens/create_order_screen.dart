@@ -228,6 +228,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     context.read<AuthCubit>().addOrderToFirebase(
       orderClientID: currentUserId,
       orderProductID: checkedProductID,
+      orderProductQuantity: quantity,
       orderDeliveryAddressID: checkedAddressID,
       orderPrise: orderPrise,
       orderDeliveryStartTimeStamp: Timestamp.fromDate(DateTime.parse(_valueToValidateToParseDateTimeStart)),
