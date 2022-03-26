@@ -239,8 +239,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                                                     ],
                                                                   ),
                                                                 ],),
-                                                                  SizedBox(height: 5,),
-                                                                  Row(children: [
+                                                              SizedBox(height: 5,),
+                                                              Row(children: [
                                                                     Icon(Icons.map),
                                                                     Flexible(
                                                                       child: Padding(padding: EdgeInsets.symmetric(horizontal: 5),
