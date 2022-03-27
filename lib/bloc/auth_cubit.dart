@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:water_delivery/screens/admin_screen.dart';
+import 'package:water_delivery/screens/driver_screen.dart';
 import 'package:water_delivery/screens/user_screen.dart';
 
 part 'auth_state.dart';
@@ -162,7 +163,7 @@ class AuthCubit extends Cubit<AuthState> {
           Navigator.of(context).pushReplacementNamed(UserScreen.id);
         }
         if (role == "driver") {
-          //Navigator.of(context).pushReplacementNamed(DriverScreen.id);
+          Navigator.of(context).pushReplacementNamed(DriverScreen.id);
         }
       } else {
         print('Document does not exist on the database');
@@ -345,4 +346,29 @@ class AuthCubit extends Cubit<AuthState> {
     }
 
   }
+  
+  Future<void> getOrderForDelivery({
+  required String orderID,
+  required String driverID,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("orders")
+          .doc(orderID)
+          .update({"orderStatus": "takenDriver"})
+          .then((value) {
+            print("Order taken by the driver");
+            FirebaseFirestore.instance
+            .collection("orders")
+            .doc(orderID)
+            .update({
+              "driverDeliveryID": driverID as String,
+            });
+            print("driverDeliveryID: $driverID pushed to Firebase");
+          }).catchError((errorr) => print("Errorr: $errorr was occured in getOrderForDelivery()"));
+    } catch (e) {
+      print ("Error: $e was occurred in getOrderForDelivery()");
+    }
+  }
+  
 }

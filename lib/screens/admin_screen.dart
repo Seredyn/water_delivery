@@ -17,8 +17,7 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference orders = FirebaseFirestore.instance.collection('orders');
-  CollectionReference products =
-      FirebaseFirestore.instance.collection('products');
+  CollectionReference products =FirebaseFirestore.instance.collection('products');
 
   @override
   void initState() {
@@ -87,7 +86,8 @@ class _AdminScreenState extends State<AdminScreen> {
                             child: Text("snapshot has error"),
                           );
                         }
-                        if (snapshot.connectionState == ConnectionState.waiting ||
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
                             snapshot.connectionState == ConnectionState.none) {
                           return Center(
                             child: Text("Loading..."),
@@ -101,7 +101,6 @@ class _AdminScreenState extends State<AdminScreen> {
                           );
                         }
 
-
                         return ListView.builder(
                             shrinkWrap: true,
                             itemCount: snapshot.data?.docs.length ?? 0,
@@ -109,14 +108,19 @@ class _AdminScreenState extends State<AdminScreen> {
                               final DocumentSnapshot doc =
                                   snapshot.data!.docs[index];
 
-                              DateTime _timeStartDelivery = doc.get("orderDeliveryStartTimeStamp").toDate();
-                              DateTime _timeFinishDelivery = doc.get("orderDeliveryFinishTimeStamp").toDate();
+                              DateTime _timeStartDelivery = doc
+                                  .get("orderDeliveryStartTimeStamp")
+                                  .toDate();
+                              DateTime _timeFinishDelivery = doc
+                                  .get("orderDeliveryFinishTimeStamp")
+                                  .toDate();
 
                               return FutureBuilder<DocumentSnapshot>(
                                   future:
                                       users.doc(doc.get("orderClientID")).get(),
                                   builder: (BuildContext context,
-                                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                      AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
                                     if (snapshot.hasError) {
                                       return Text("Something went wrong");
                                     }
@@ -131,19 +135,19 @@ class _AdminScreenState extends State<AdminScreen> {
                                               as Map<String, dynamic>;
                                       //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
-
                                       return FutureBuilder<DocumentSnapshot>(
                                           future: users
                                               .doc(doc.get("orderClientID"))
                                               .collection("addresses")
-                                              .doc(doc
-                                                  .get("orderDeliveryAddressID"))
+                                              .doc(doc.get(
+                                                  "orderDeliveryAddressID"))
                                               .get(),
                                           builder: (BuildContext context,
                                               AsyncSnapshot<DocumentSnapshot>
                                                   snapshot) {
                                             if (snapshot.hasError) {
-                                              return Text("Something went wrong");
+                                              return Text(
+                                                  "Something went wrong");
                                             }
                                             if (snapshot.hasData &&
                                                 !snapshot.data!.exists) {
@@ -152,7 +156,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                             }
                                             if (snapshot.connectionState ==
                                                 ConnectionState.done) {
-                                              Map<String, dynamic> addressesMap =
+                                              Map<String, dynamic>
+                                                  addressesMap =
                                                   snapshot.data!.data()
                                                       as Map<String, dynamic>;
                                               //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
@@ -160,10 +165,11 @@ class _AdminScreenState extends State<AdminScreen> {
                                               return FutureBuilder<
                                                       DocumentSnapshot>(
                                                   future: products
-                                                      .doc(doc
-                                                          .get("orderProductID"))
+                                                      .doc(doc.get(
+                                                          "orderProductID"))
                                                       .get(),
-                                                  builder: (BuildContext context,
+                                                  builder: (BuildContext
+                                                          context,
                                                       AsyncSnapshot<
                                                               DocumentSnapshot>
                                                           snapshot) {
@@ -172,7 +178,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                                           "Something went wrong");
                                                     }
                                                     if (snapshot.hasData &&
-                                                        !snapshot.data!.exists) {
+                                                        !snapshot
+                                                            .data!.exists) {
                                                       return Text(
                                                           "Document does not exist");
                                                     }
@@ -186,153 +193,210 @@ class _AdminScreenState extends State<AdminScreen> {
                                                                   dynamic>;
 
                                                       return Padding(
-                                                        padding: EdgeInsets.all(10) ,
+                                                        padding:
+                                                            EdgeInsets.all(10),
                                                         child: Container(
-                                                          decoration: BoxDecoration(
-                                                            gradient: LinearGradient(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            gradient:
+                                                                LinearGradient(
                                                               colors: [
-                                                                Colors.lightBlueAccent.withOpacity(0.5),
-                                                                Colors.lightBlueAccent.withOpacity(1.0),
+                                                                Colors
+                                                                    .lightBlueAccent
+                                                                    .withOpacity(
+                                                                        0.5),
+                                                                Colors
+                                                                    .lightBlueAccent
+                                                                    .withOpacity(
+                                                                        1.0),
                                                               ],
-                                                              begin: Alignment.topLeft,
-                                                              end: Alignment.bottomRight,
+                                                              begin: Alignment
+                                                                  .topLeft,
+                                                              end: Alignment
+                                                                  .bottomRight,
                                                             ),
-                                                            borderRadius: BorderRadius.circular(15),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
                                                           ),
-
-
                                                           child: Padding(
-                                                            padding: const EdgeInsets.all(8.0),
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
                                                             child: Column(
                                                                 children: [
-                                                              Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                children: [
-                                                                  Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                                                                      child: Text(doc.get("orderNumber").toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),)),
-                                                                  Column(
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
                                                                     children: [
-                                                                      Text(
-                                                                          _timeStartDelivery.month.toString() +
-                                                                          "." +
-                                                                          _timeStartDelivery.day.toString()
-                                                                        , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                                                                      Text(
-                                                                          _timeStartDelivery.hour.toString().padLeft(2, '0') +
-                                                                              " : " +
-                                                                              _timeStartDelivery.minute.toString().padLeft(2, '0')
-                                                                        , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                                                      Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal:
+                                                                                  5),
+                                                                          child:
+                                                                              Text(
+                                                                            doc.get("orderNumber").toString(),
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                          )),
+                                                                      Column(
+                                                                        children: [
+                                                                          Text(
+                                                                            _timeStartDelivery.month.toString() +
+                                                                                "." +
+                                                                                _timeStartDelivery.day.toString(),
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                          ),
+                                                                          Text(
+                                                                            _timeStartDelivery.hour.toString().padLeft(2, '0') +
+                                                                                " : " +
+                                                                                _timeStartDelivery.minute.toString().padLeft(2, '0'),
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      Column(
+                                                                        children: [
+                                                                          Text(
+                                                                            _timeFinishDelivery.month.toString() +
+                                                                                "." +
+                                                                                _timeFinishDelivery.day.toString(),
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                          ),
+                                                                          Text(
+                                                                            _timeFinishDelivery.hour.toString().padLeft(2, '0') +
+                                                                                " : " +
+                                                                                _timeFinishDelivery.minute.toString().padLeft(2, '0'),
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ],
                                                                   ),
-                                                                  Column(
+                                                                  SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Row(
                                                                     children: [
-                                                                      Text(
-                                                                          _timeFinishDelivery.month.toString() +
-                                                                              "." +
-                                                                              _timeFinishDelivery.day.toString()
-                                                                        , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                                                                      Text(
-                                                                          _timeFinishDelivery.hour.toString().padLeft(2, '0') +
-                                                                              " : " +
-                                                                              _timeFinishDelivery.minute.toString().padLeft(2, '0')
-                                                                      , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                                                      Icon(Icons
+                                                                          .map),
+                                                                      Flexible(
+                                                                        child: Padding(
+                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                            child: Text(
+                                                                              addressesMap['addressName'],
+                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                              textAlign: TextAlign.center,
+                                                                            )),
+                                                                      ),
                                                                     ],
                                                                   ),
-                                                                ],),
-                                                              SizedBox(height: 5,),
-                                                              Row(children: [
-                                                                    Icon(Icons.map),
-                                                                    Flexible(
-                                                                      child: Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                                                                          child: Text(addressesMap['addressName'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center,)),
-                                                                    ),
-                                                                  ],),
-                                                              SizedBox(height: 5,),
-                                                              Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                children: [
-                                                                Flexible(
-                                                                  child: Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                                                                      child: Text(productsMap["productName"], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center,)),
-                                                                ),
-                                                                Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                                                                    child: Text(doc.get("orderProductQuantity").toString() + " шт.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25), )),
-                                                              ],),
-                                                              SizedBox(height: 5,),
-                                                              Row(children: [
-                                                                Expanded(
-                                                                  child: Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                                                                      child: Text(userMap['name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),)),
-                                                                ),
-                                                              ],),
-                                                              SizedBox(height: 5,),
-                                                              Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                children: [
-                                                                ElevatedButton(
-                                                                      child: Text("Отмена"),
-                                                                      onPressed: () {
-                                                                        String orderID = doc
-                                                                            .get("orderID");
-                                                                        _confirmOrder(
-                                                                            orderID);
-                                                                      },
-                                                                    ),
-                                                                SizedBox(width: 5,),
-                                                                ElevatedButton(
-                                                                  child: Text("На проверку"),
-                                                                  onPressed: () {
-                                                                    String orderID = doc
-                                                                        .get("orderID");
-                                                                    _confirmOrder(
-                                                                        orderID);
-                                                                  },
-                                                                ),
-                                                                SizedBox(width: 5,),
-                                                                ElevatedButton(
-
-                                                                  child: Text("OK"),
-                                                                  onPressed: () {
-                                                                    String orderID = doc
-                                                                        .get("orderID");
-                                                                    _confirmOrder(
-                                                                        orderID);
-                                                                  },
-                                                                ),
-                                                              ],),
-                                                              // ListTile(
-                                                              //   leading: Icon(Icons
-                                                              //       .shopping_cart_outlined),
-                                                              //   title: Text("№: " +
-                                                              //       doc
-                                                              //           .get(
-                                                              //               "orderNumber")
-                                                              //           .toString() +
-                                                              //       ". Клиент: " +
-                                                              //       userMap['name']),
-                                                              //   subtitle: Column(
-                                                              //     children: [
-                                                              //       Text(
-                                                              //           "Адрес: ${addressesMap['addressName']}"),
-                                                              //       Text("Товар: ${productsMap["productName"]}, Количество: " +
-                                                              //           doc
-                                                              //               .get(
-                                                              //                   "orderProductQuantity")
-                                                              //               .toString()),
-                                                              //     ],
-                                                              //   ),
-                                                              //   trailing:
-                                                              //       ElevatedButton(
-                                                              //     child: Text("OK"),
-                                                              //     onPressed: () {
-                                                              //       String orderID = doc
-                                                              //           .get("orderID");
-                                                              //       _confirmOrder(
-                                                              //           orderID);
-                                                              //     },
-                                                              //   ),
-                                                              // ),
-                                                            ]),
+                                                                  SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Flexible(
+                                                                        child: Padding(
+                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                            child: Text(
+                                                                              productsMap["productName"],
+                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                              textAlign: TextAlign.center,
+                                                                            )),
+                                                                      ),
+                                                                      Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal:
+                                                                                  5),
+                                                                          child:
+                                                                              Text(
+                                                                            doc.get("orderProductQuantity").toString() +
+                                                                                " шт.",
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                          )),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Padding(
+                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                            child: Text(
+                                                                              userMap['name'],
+                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                            )),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceEvenly,
+                                                                    children: [
+                                                                      ElevatedButton(
+                                                                        child: Text(
+                                                                            "Отмена"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          String
+                                                                              orderID =
+                                                                              doc.get("orderID");
+                                                                          _confirmOrder(
+                                                                              orderID);
+                                                                        },
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                      ElevatedButton(
+                                                                        child: Text(
+                                                                            "На проверку"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          String
+                                                                              orderID =
+                                                                              doc.get("orderID");
+                                                                          _confirmOrder(
+                                                                              orderID);
+                                                                        },
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                      ElevatedButton(
+                                                                        child: Text(
+                                                                            "OK"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          String
+                                                                              orderID =
+                                                                              doc.get("orderID");
+                                                                          _confirmOrder(
+                                                                              orderID);
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ]),
                                                           ),
                                                         ),
                                                       );
@@ -350,147 +414,395 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
               //Confirmed Orders
-              SingleChildScrollView(
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: _confirmedOrdersStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text("snapshot has error"),
-                        );
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.connectionState == ConnectionState.none) {
-                        return Center(
-                          child: Text("Loading..."),
-                        );
-                      }
-                      if (snapshot.data?.docs.length == 0) {
-                        return Column(
-                          children: [
-                            Text("Нет новых или необработанных заказов."),
-                          ],
-                        );
-                      }
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data?.docs.length ?? 0,
-                          itemBuilder: (context, index) {
-                            final DocumentSnapshot doc =
-                                snapshot.data!.docs[index];
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.lightBlueAccent.withOpacity(0.5),
+                ),
+                child: SingleChildScrollView(
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: _confirmedOrdersStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text("snapshot has error"),
+                          );
+                        }
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.connectionState == ConnectionState.none) {
+                          return Center(
+                            child: Text("Loading..."),
+                          );
+                        }
+                        if (snapshot.data?.docs.length == 0) {
+                          return Column(
+                            children: [
+                              Text("Нет подтвержденных заказов."),
+                            ],
+                          );
+                        }
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data?.docs.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final DocumentSnapshot doc =
+                                  snapshot.data!.docs[index];
 
-                            return FutureBuilder<DocumentSnapshot>(
-                                future:
-                                    users.doc(doc.get("orderClientID")).get(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text("Something went wrong");
-                                  }
-                                  if (snapshot.hasData &&
-                                      !snapshot.data!.exists) {
-                                    return Text("Document does not exist");
-                                  }
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    Map<String, dynamic> userMap =
-                                        snapshot.data!.data()
-                                            as Map<String, dynamic>;
-                                    //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
+                              DateTime _timeStartDelivery = doc
+                                  .get("orderDeliveryStartTimeStamp")
+                                  .toDate();
+                              DateTime _timeFinishDelivery = doc
+                                  .get("orderDeliveryFinishTimeStamp")
+                                  .toDate();
 
-                                    return FutureBuilder<DocumentSnapshot>(
-                                        future: users
-                                            .doc(doc.get("orderClientID"))
-                                            .collection("addresses")
-                                            .doc(doc
-                                                .get("orderDeliveryAddressID"))
-                                            .get(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<DocumentSnapshot>
-                                                snapshot) {
-                                          if (snapshot.hasError) {
-                                            return Text("Something went wrong");
-                                          }
-                                          if (snapshot.hasData &&
-                                              !snapshot.data!.exists) {
-                                            return Text(
-                                                "Document does not exist");
-                                          }
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.done) {
-                                            Map<String, dynamic> addressesMap =
-                                                snapshot.data!.data()
-                                                    as Map<String, dynamic>;
-                                            //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
+                              return FutureBuilder<DocumentSnapshot>(
+                                  future:
+                                      users.doc(doc.get("orderClientID")).get(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Text("Something went wrong");
+                                    }
+                                    if (snapshot.hasData &&
+                                        !snapshot.data!.exists) {
+                                      return Text("Document does not exist");
+                                    }
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      Map<String, dynamic> userMap =
+                                          snapshot.data!.data()
+                                              as Map<String, dynamic>;
 
-                                            return FutureBuilder<
-                                                    DocumentSnapshot>(
-                                                future: products
-                                                    .doc(doc
-                                                        .get("orderProductID"))
-                                                    .get(),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<
-                                                            DocumentSnapshot>
-                                                        snapshot) {
-                                                  if (snapshot.hasError) {
-                                                    return Text(
-                                                        "Something went wrong");
-                                                  }
-                                                  if (snapshot.hasData &&
-                                                      !snapshot.data!.exists) {
-                                                    return Text(
-                                                        "Document does not exist");
-                                                  }
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.done) {
-                                                    Map<String, dynamic>
-                                                        productsMap =
-                                                        snapshot.data!.data()
-                                                            as Map<String,
-                                                                dynamic>;
-                                                    return ListTile(
-                                                      leading: Icon(Icons
-                                                          .shopping_cart_outlined),
-                                                      title: Text("№: " +
-                                                          doc
-                                                              .get(
-                                                                  "orderNumber")
-                                                              .toString() +
-                                                          ". Клиент: " +
-                                                          userMap['name']),
-                                                      subtitle: Column(
-                                                        children: [
-                                                          Text(
-                                                              "Адрес: ${addressesMap['addressName']}"),
-                                                          Text("Товар: ${productsMap["productName"]}, Количество: " +
-                                                              doc
-                                                                  .get(
-                                                                      "orderProductQuantity")
-                                                                  .toString()),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  }
-                                                  return Text("Loading");
-                                                });
-                                          }
-                                          return Text("Loading...");
-                                        });
-                                  }
-                                  return Text("loading...");
-                                });
+                                      return FutureBuilder<DocumentSnapshot>(
+                                          future: users
+                                              .doc(doc.get("orderClientID"))
+                                              .collection("addresses")
+                                              .doc(doc.get(
+                                                  "orderDeliveryAddressID"))
+                                              .get(),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<DocumentSnapshot>
+                                                  snapshot) {
+                                            if (snapshot.hasError) {
+                                              return Text(
+                                                  "Something went wrong");
+                                            }
+                                            if (snapshot.hasData &&
+                                                !snapshot.data!.exists) {
+                                              return Text(
+                                                  "Document does not exist");
+                                            }
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.done) {
+                                              Map<String, dynamic>
+                                                  addressesMap =
+                                                  snapshot.data!.data()
+                                                      as Map<String, dynamic>;
+                                              return FutureBuilder<DocumentSnapshot>(
+                                                  future:
+                                                  users.doc(doc.get("orderClientID")).get(),
+                                                  builder: (BuildContext context,
+                                                      AsyncSnapshot<DocumentSnapshot>
+                                                      snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return Text("Something went wrong");
+                                                    }
+                                                    if (snapshot.hasData &&
+                                                        !snapshot.data!.exists) {
+                                                      return Text("Document does not exist");
+                                                    }
+                                                    if (snapshot.connectionState ==
+                                                        ConnectionState.done) {
+                                                      Map<String, dynamic> userMap =
+                                                      snapshot.data!.data()
+                                                      as Map<String, dynamic>;
+                                                      //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
-                            // return ListTile(
-                            //   leading: Icon(Icons.shopping_cart_outlined),
-                            //   title: Text("orderID: " + doc.get("orderID")),
-                            //   subtitle: Text("orderClientID: " + getNameByID(ID: doc.get("orderClientID"))),
-                            //subtitle: Text("orderClientID: " + doc.get("orderClientID")),
-                            //subtitle: Text("orderClientID: " + doc.get("orderClientID")),
-                            // );
-                          });
-                    }),
+                                                      return FutureBuilder<DocumentSnapshot>(
+                                                          future: users
+                                                              .doc(doc.get("orderClientID"))
+                                                              .collection("addresses")
+                                                              .doc(doc.get(
+                                                              "orderDeliveryAddressID"))
+                                                              .get(),
+                                                          builder: (BuildContext context,
+                                                              AsyncSnapshot<DocumentSnapshot>
+                                                              snapshot) {
+                                                            if (snapshot.hasError) {
+                                                              return Text(
+                                                                  "Something went wrong");
+                                                            }
+                                                            if (snapshot.hasData &&
+                                                                !snapshot.data!.exists) {
+                                                              return Text(
+                                                                  "Document does not exist");
+                                                            }
+                                                            if (snapshot.connectionState ==
+                                                                ConnectionState.done) {
+                                                              Map<String, dynamic>
+                                                              addressesMap =
+                                                              snapshot.data!.data()
+                                                              as Map<String, dynamic>;
+                                                              //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
+
+                                                              return FutureBuilder<
+                                                                  DocumentSnapshot>(
+                                                                  future: products
+                                                                      .doc(doc.get(
+                                                                      "orderProductID"))
+                                                                      .get(),
+                                                                  builder: (BuildContext
+                                                                  context,
+                                                                      AsyncSnapshot<
+                                                                          DocumentSnapshot>
+                                                                      snapshot) {
+                                                                    if (snapshot.hasError) {
+                                                                      return Text(
+                                                                          "Something went wrong");
+                                                                    }
+                                                                    if (snapshot.hasData &&
+                                                                        !snapshot
+                                                                            .data!.exists) {
+                                                                      return Text(
+                                                                          "Document does not exist");
+                                                                    }
+                                                                    if (snapshot
+                                                                        .connectionState ==
+                                                                        ConnectionState.done) {
+                                                                      Map<String, dynamic>
+                                                                      productsMap =
+                                                                      snapshot.data!.data()
+                                                                      as Map<String,
+                                                                          dynamic>;
+
+                                                                      return Padding(
+                                                                        padding:
+                                                                        EdgeInsets.all(10),
+                                                                        child: Container(
+                                                                          decoration:
+                                                                          BoxDecoration(
+                                                                            gradient:
+                                                                            LinearGradient(
+                                                                              colors: [
+                                                                                Colors
+                                                                                    .lightBlueAccent
+                                                                                    .withOpacity(
+                                                                                    0.5),
+                                                                                Colors
+                                                                                    .lightBlueAccent
+                                                                                    .withOpacity(
+                                                                                    1.0),
+                                                                              ],
+                                                                              begin: Alignment
+                                                                                  .topLeft,
+                                                                              end: Alignment
+                                                                                  .bottomRight,
+                                                                            ),
+                                                                            borderRadius:
+                                                                            BorderRadius
+                                                                                .circular(
+                                                                                15),
+                                                                          ),
+                                                                          child: Padding(
+                                                                            padding:
+                                                                            const EdgeInsets
+                                                                                .all(8.0),
+                                                                            child: Column(
+                                                                                children: [
+                                                                                  Row(
+                                                                                    mainAxisAlignment:
+                                                                                    MainAxisAlignment
+                                                                                        .spaceBetween,
+                                                                                    children: [
+                                                                                      Padding(
+                                                                                          padding: EdgeInsets.symmetric(
+                                                                                              horizontal:
+                                                                                              5),
+                                                                                          child:
+                                                                                          Text(
+                                                                                            doc.get("orderNumber").toString(),
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                                          )),
+                                                                                      Column(
+                                                                                        children: [
+                                                                                          Text(
+                                                                                            _timeStartDelivery.month.toString() +
+                                                                                                "." +
+                                                                                                _timeStartDelivery.day.toString(),
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                          ),
+                                                                                          Text(
+                                                                                            _timeStartDelivery.hour.toString().padLeft(2, '0') +
+                                                                                                " : " +
+                                                                                                _timeStartDelivery.minute.toString().padLeft(2, '0'),
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                      Column(
+                                                                                        children: [
+                                                                                          Text(
+                                                                                            _timeFinishDelivery.month.toString() +
+                                                                                                "." +
+                                                                                                _timeFinishDelivery.day.toString(),
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                          ),
+                                                                                          Text(
+                                                                                            _timeFinishDelivery.hour.toString().padLeft(2, '0') +
+                                                                                                " : " +
+                                                                                                _timeFinishDelivery.minute.toString().padLeft(2, '0'),
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    height: 5,
+                                                                                  ),
+                                                                                  Row(
+                                                                                    children: [
+                                                                                      Icon(Icons
+                                                                                          .map),
+                                                                                      Flexible(
+                                                                                        child: Padding(
+                                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                                            child: Text(
+                                                                                              addressesMap['addressName'],
+                                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                              textAlign: TextAlign.center,
+                                                                                            )),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    height: 5,
+                                                                                  ),
+                                                                                  Row(
+                                                                                    mainAxisAlignment:
+                                                                                    MainAxisAlignment
+                                                                                        .spaceBetween,
+                                                                                    children: [
+                                                                                      Flexible(
+                                                                                        child: Padding(
+                                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                                            child: Text(
+                                                                                              productsMap["productName"],
+                                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                              textAlign: TextAlign.center,
+                                                                                            )),
+                                                                                      ),
+                                                                                      Padding(
+                                                                                          padding: EdgeInsets.symmetric(
+                                                                                              horizontal:
+                                                                                              5),
+                                                                                          child:
+                                                                                          Text(
+                                                                                            doc.get("orderProductQuantity").toString() +
+                                                                                                " шт.",
+                                                                                            style:
+                                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                                          )),
+                                                                                    ],
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    height: 5,
+                                                                                  ),
+                                                                                  Row(
+                                                                                    children: [
+                                                                                      Expanded(
+                                                                                        child: Padding(
+                                                                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                                            child: Text(
+                                                                                              userMap['name'],
+                                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                                            )),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    height: 5,
+                                                                                  ),
+                                                                                  Row(
+                                                                                    mainAxisAlignment:
+                                                                                    MainAxisAlignment
+                                                                                        .spaceEvenly,
+                                                                                    children: [
+                                                                                      ElevatedButton(
+                                                                                        child: Text(
+                                                                                            "Отмена"),
+                                                                                        onPressed:
+                                                                                            () {
+                                                                                          String
+                                                                                          orderID =
+                                                                                          doc.get("orderID");
+                                                                                          _confirmOrder(
+                                                                                              orderID);
+                                                                                        },
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width:
+                                                                                        5,
+                                                                                      ),
+                                                                                      ElevatedButton(
+                                                                                        child: Text(
+                                                                                            "На проверку"),
+                                                                                        onPressed:
+                                                                                            () {
+                                                                                          String
+                                                                                          orderID =
+                                                                                          doc.get("orderID");
+                                                                                          _confirmOrder(
+                                                                                              orderID);
+                                                                                        },
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width:
+                                                                                        5,
+                                                                                      ),
+                                                                                      ElevatedButton(
+                                                                                        child: Text(
+                                                                                            "OK"),
+                                                                                        onPressed:
+                                                                                            () {
+                                                                                          String
+                                                                                          orderID =
+                                                                                          doc.get("orderID");
+                                                                                          _confirmOrder(
+                                                                                              orderID);
+                                                                                        },
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ]),
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }
+                                                                    return Text("Loading");
+                                                                  });
+                                                            }
+                                                            return Text("Loading...");
+                                                          });
+                                                    }
+                                                    return Text("loading...");
+                                                  });
+                                            }
+                                            return Text("Loading...");
+                                          });
+                                    }
+                                    return Text("loading...");
+                                  });
+
+                            });
+                      }),
+                ),
               ),
               Icon(Icons.directions_bike),
             ],

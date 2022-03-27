@@ -50,6 +50,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             email: _email,
             password: _password,
           ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+      //  Не выводится ошибка авторизации и ничего не происходит при ошибке
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error. Check all Text Fields')));
