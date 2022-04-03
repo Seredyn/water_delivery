@@ -207,15 +207,18 @@ class AuthCubit extends Cubit<AuthState> {
     required double orderPrise,
     required Timestamp orderDeliveryStartTimeStamp,
     required Timestamp orderDeliveryFinishTimeStamp,
-
-}) async {
+  }) async {
     int _orderNumber = 0;
-    Stream documentStream = FirebaseFirestore.instance.collection('settings').doc('orderSettings').snapshots();
+    Stream documentStream = FirebaseFirestore.instance
+        .collection('settings')
+        .doc('orderSettings')
+        .snapshots();
     //int orderNumber = documentStream.
     FirebaseFirestore.instance
         .collection('settings')
         .doc('orderSettings')
-        .get().then((value) {
+        .get()
+        .then((value) {
       _orderNumber = value.get("lastOrderNumber") + 1;
     }).then((value) {
       FirebaseFirestore.instance
@@ -230,25 +233,22 @@ class AuthCubit extends Cubit<AuthState> {
       await FirebaseFirestore.instance
           .collection("orders")
           .add({}).then((value) {
-            print("order begin Writing");
+        print("order begin Writing");
 
-            FirebaseFirestore.instance
-                .collection("orders")
-            .doc(value.id)
-            .set({
-              "orderNumber": _orderNumber as int,
-              "orderID": value.id as String,
-              "orderClientID": orderClientID as String,
-              "orderProductID": orderProductID as String,
-              "orderProductQuantity": orderProductQuantity as int,
-              "orderDeliveryAddressID": orderDeliveryAddressID as String,
-              "orderStatus": "new" as String,
-              "orderPrise": orderPrise as double,
-              "orderCreateTimeStamp": Timestamp.now(),
-              "orderDeliveryStartTimeStamp": orderDeliveryStartTimeStamp,
-              "orderDeliveryFinishTimeStamp": orderDeliveryFinishTimeStamp,
-            });
-            print("Order was added to Firebase");
+        FirebaseFirestore.instance.collection("orders").doc(value.id).set({
+          "orderNumber": _orderNumber as int,
+          "orderID": value.id as String,
+          "orderClientID": orderClientID as String,
+          "orderProductID": orderProductID as String,
+          "orderProductQuantity": orderProductQuantity as int,
+          "orderDeliveryAddressID": orderDeliveryAddressID as String,
+          "orderStatus": "new" as String,
+          "orderPrise": orderPrise as double,
+          "orderCreateTimeStamp": Timestamp.now(),
+          "orderDeliveryStartTimeStamp": orderDeliveryStartTimeStamp,
+          "orderDeliveryFinishTimeStamp": orderDeliveryFinishTimeStamp,
+        });
+        print("Order was added to Firebase");
       }).catchError((error) => print("Failed to add Order: $error"));
     } catch (e) {
       print("Some error hapens when Order was added");
@@ -330,9 +330,9 @@ class AuthCubit extends Cubit<AuthState> {
       print("Error when try activate product");
     }
   }
-  
-  Future<void> confirmOrderAndSendToDriver ({
-  required String orderID,
+
+  Future<void> confirmOrderAndSendToDriver({
+    required String orderID,
   }) async {
     try {
       await FirebaseFirestore.instance
@@ -340,35 +340,82 @@ class AuthCubit extends Cubit<AuthState> {
           .doc(orderID)
           .update({"orderStatus": "confirmed"})
           .then((value) => print("order confirmed"))
-          .catchError((error) => print ("This error $error was occurred, when order status try cinfirmed"));
+          .catchError((error) => print(
+              "This error $error was occurred, when order status try cinfirmed"));
     } catch (e) {
-      print ("Error: $e was occurred when confirmOrderAndSendToDriver()");
+      print("Error: $e was occurred when confirmOrderAndSendToDriver()");
     }
-
   }
-  
+
   Future<void> getOrderForDelivery({
-  required String orderID,
-  required String driverID,
+    required String orderID,
+    required String driverID,
   }) async {
     try {
       await FirebaseFirestore.instance
           .collection("orders")
           .doc(orderID)
-          .update({"orderStatus": "takenDriver"})
-          .then((value) {
-            print("Order taken by the driver");
-            FirebaseFirestore.instance
+          .update({"orderStatus": "takenDriver"}).then((value) {
+        print("Order taken by the driver");
+        FirebaseFirestore.instance.collection("orders").doc(orderID).update({
+          "driverDeliveryID": driverID as String,
+        });
+        print("driverDeliveryID: $driverID pushed to Firebase");
+      }).catchError((error) =>
+              print("Errorr: $error was occured in getOrderForDelivery()"));
+    } catch (e) {
+      print("Error: $e was occurred in getOrderForDelivery()");
+    }
+  }
+
+  Future<void> unGetOrderForDelivery({
+    required String orderID,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("orders")
+          .doc(orderID)
+          .update({"orderStatus": "confirmed"}).then((value) {
+        print("The driver canceled the delivery of the order");
+        FirebaseFirestore.instance
             .collection("orders")
             .doc(orderID)
             .update({
-              "driverDeliveryID": driverID as String,
-            });
-            print("driverDeliveryID: $driverID pushed to Firebase");
-          }).catchError((errorr) => print("Errorr: $errorr was occured in getOrderForDelivery()"));
+              "driverDeliveryID": FieldValue.delete(),
+            })
+            .then((value) => print("DriverID deleted from Firebase"))
+            .catchError((error) =>
+                print("Failed to delete driver's ID property: $error"));
+      }).catchError((error) =>
+              print("Errorr: $error was occured in getOrderForDelivery()"));
     } catch (e) {
-      print ("Error: $e was occurred in getOrderForDelivery()");
+      print("Error: $e was occurred in unGetOrderForDelivery()");
     }
   }
-  
+
+  Future<void> makeOrderAsDelivered({
+    required String orderID,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("orders")
+          .doc(orderID)
+          .update({"orderStatus": "delivered"}).then((value) {
+        print("Order delivered");
+        DateTime _now = DateTime.now();
+        FirebaseFirestore.instance
+            .collection("orders")
+            .doc(orderID)
+            .update({
+          "orderDeliveredTimeStamp": _now,
+        })
+            .then((value) => print("Order delivered timestamp added"))
+            .catchError((error) =>
+            print("Failed to Order delivered timestamp added: $error"));
+      }).catchError((error) =>
+          print("Errorr: $error was occured in makeOrderAsDelivered()"));
+    } catch (e) {
+      print("Error: $e in makeOrderAsDelivered()");
+    }
+  }
 }
