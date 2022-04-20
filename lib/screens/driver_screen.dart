@@ -29,18 +29,17 @@ class _DriverScreenState extends State<DriverScreen> {
   }
 
   void _getOrderForDelivery(String orderID) {
-    context.read<AuthCubit>()
+    context
+        .read<AuthCubit>()
         .getOrderForDelivery(orderID: orderID, driverID: currentDriverId);
   }
 
   void _unGetOrderForDelivery(String orderID) {
-    context.read<AuthCubit>()
-        .unGetOrderForDelivery(orderID: orderID);
+    context.read<AuthCubit>().unGetOrderForDelivery(orderID: orderID);
   }
 
-  void _orderDelivered (String orderID) {
-    context.read<AuthCubit>()
-        .makeOrderAsDelivered(orderID: orderID);
+  void _orderDelivered(String orderID) {
+    context.read<AuthCubit>().makeOrderAsDelivered(orderID: orderID);
   }
 
   @override
@@ -216,20 +215,22 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                     .lightBlueAccent
                                                                     .withOpacity(
                                                                         0.5),
-                                                                Colors
-                                                                    .lightBlueAccent
+                                                                Colors.amber
                                                                     .withOpacity(
-                                                                        1.0),
+                                                                        0.5),
                                                               ],
                                                               begin: Alignment
-                                                                  .topLeft,
+                                                                  .topCenter,
                                                               end: Alignment
-                                                                  .bottomRight,
+                                                                  .bottomCenter,
                                                             ),
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         15),
+                                                            border: Border.all(
+                                                                width: 2.0),
+                                                            //borderRadius: BorderRadius.circular(20.0),
                                                           ),
                                                           child: Padding(
                                                             padding:
@@ -557,8 +558,7 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                     .lightBlueAccent
                                                                     .withOpacity(
                                                                         0.5),
-                                                                Colors
-                                                                    .amber
+                                                                Colors.amber
                                                                     .withOpacity(
                                                                         0.5),
                                                               ],
@@ -699,8 +699,10 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                   ),
                                                                   Divider(
                                                                     height: 10,
-                                                                    thickness: 8,
-                                                                    color: Colors.indigo,
+                                                                    thickness:
+                                                                        8,
+                                                                    color: Colors
+                                                                        .indigo,
                                                                   ),
                                                                   Row(
                                                                     mainAxisAlignment:
@@ -712,18 +714,27 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                             "Отмена"),
                                                                         onPressed:
                                                                             () {
-                                                                          String orderID = doc.get("orderID");
-                                                                          _unGetOrderForDelivery(orderID);
+                                                                          String
+                                                                              orderID =
+                                                                              doc.get("orderID");
+                                                                          _unGetOrderForDelivery(
+                                                                              orderID);
                                                                         },
                                                                       ),
-                                                                      SizedBox(width: 5,),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
                                                                       ElevatedButton(
                                                                         child: Text(
                                                                             "Доставлен"),
                                                                         onPressed:
                                                                             () {
-                                                                          String orderID = doc.get("orderID");
-                                                                          _orderDelivered (orderID);
+                                                                          String
+                                                                              orderID =
+                                                                              doc.get("orderID");
+                                                                          _orderDelivered(
+                                                                              orderID);
                                                                         },
                                                                       ),
                                                                     ],
@@ -759,7 +770,7 @@ class _DriverScreenState extends State<DriverScreen> {
                           );
                         }
                         if (snapshot.connectionState ==
-                            ConnectionState.waiting ||
+                                ConnectionState.waiting ||
                             snapshot.connectionState == ConnectionState.none) {
                           return Center(
                             child: Text("Loading..."),
@@ -768,7 +779,8 @@ class _DriverScreenState extends State<DriverScreen> {
                         if (snapshot.data?.docs.length == 0) {
                           return Column(
                             children: [
-                              Text("Нет принятых и недоставленных заказов заказов."),
+                              Text(
+                                  "Нет принятых и недоставленных заказов заказов."),
                             ],
                           );
                         }
@@ -778,7 +790,7 @@ class _DriverScreenState extends State<DriverScreen> {
                             itemCount: snapshot.data?.docs.length ?? 0,
                             itemBuilder: (context, index) {
                               final DocumentSnapshot doc =
-                              snapshot.data!.docs[index];
+                                  snapshot.data!.docs[index];
 
                               DateTime _timeStartDelivery = doc
                                   .get("orderDeliveryStartTimeStamp")
@@ -786,16 +798,15 @@ class _DriverScreenState extends State<DriverScreen> {
                               DateTime _timeFinishDelivery = doc
                                   .get("orderDeliveryFinishTimeStamp")
                                   .toDate();
-                              DateTime _timeOrderDelivered = doc
-                                  .get("orderDeliveredTimeStamp")
-                                  .toDate();
+                              DateTime _timeOrderDelivered =
+                                  doc.get("orderDeliveredTimeStamp").toDate();
 
                               return FutureBuilder<DocumentSnapshot>(
                                   future:
-                                  users.doc(doc.get("orderClientID")).get(),
+                                      users.doc(doc.get("orderClientID")).get(),
                                   builder: (BuildContext context,
                                       AsyncSnapshot<DocumentSnapshot>
-                                      snapshot) {
+                                          snapshot) {
                                     if (snapshot.hasError) {
                                       return Text("Something went wrong");
                                     }
@@ -806,8 +817,8 @@ class _DriverScreenState extends State<DriverScreen> {
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {
                                       Map<String, dynamic> userMap =
-                                      snapshot.data!.data()
-                                      as Map<String, dynamic>;
+                                          snapshot.data!.data()
+                                              as Map<String, dynamic>;
                                       //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
                                       return FutureBuilder<DocumentSnapshot>(
@@ -815,11 +826,11 @@ class _DriverScreenState extends State<DriverScreen> {
                                               .doc(doc.get("orderClientID"))
                                               .collection("addresses")
                                               .doc(doc.get(
-                                              "orderDeliveryAddressID"))
+                                                  "orderDeliveryAddressID"))
                                               .get(),
                                           builder: (BuildContext context,
                                               AsyncSnapshot<DocumentSnapshot>
-                                              snapshot) {
+                                                  snapshot) {
                                             if (snapshot.hasError) {
                                               return Text(
                                                   "Something went wrong");
@@ -832,22 +843,22 @@ class _DriverScreenState extends State<DriverScreen> {
                                             if (snapshot.connectionState ==
                                                 ConnectionState.done) {
                                               Map<String, dynamic>
-                                              addressesMap =
-                                              snapshot.data!.data()
-                                              as Map<String, dynamic>;
+                                                  addressesMap =
+                                                  snapshot.data!.data()
+                                                      as Map<String, dynamic>;
                                               //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
                                               return FutureBuilder<
-                                                  DocumentSnapshot>(
+                                                      DocumentSnapshot>(
                                                   future: products
                                                       .doc(doc.get(
-                                                      "orderProductID"))
+                                                          "orderProductID"))
                                                       .get(),
                                                   builder: (BuildContext
-                                                  context,
+                                                          context,
                                                       AsyncSnapshot<
-                                                          DocumentSnapshot>
-                                                      snapshot) {
+                                                              DocumentSnapshot>
+                                                          snapshot) {
                                                     if (snapshot.hasError) {
                                                       return Text(
                                                           "Something went wrong");
@@ -859,31 +870,30 @@ class _DriverScreenState extends State<DriverScreen> {
                                                           "Document does not exist");
                                                     }
                                                     if (snapshot
-                                                        .connectionState ==
+                                                            .connectionState ==
                                                         ConnectionState.done) {
                                                       Map<String, dynamic>
-                                                      productsMap =
-                                                      snapshot.data!.data()
-                                                      as Map<String,
-                                                          dynamic>;
+                                                          productsMap =
+                                                          snapshot.data!.data()
+                                                              as Map<String,
+                                                                  dynamic>;
 
                                                       return Padding(
                                                         padding:
-                                                        EdgeInsets.all(10),
+                                                            EdgeInsets.all(10),
                                                         child: Container(
                                                           decoration:
-                                                          BoxDecoration(
+                                                              BoxDecoration(
                                                             gradient:
-                                                            LinearGradient(
+                                                                LinearGradient(
                                                               colors: [
                                                                 Colors
                                                                     .lightBlueAccent
                                                                     .withOpacity(
-                                                                    0.5),
-                                                                Colors
-                                                                    .amber
+                                                                        0.5),
+                                                                Colors.amber
                                                                     .withOpacity(
-                                                                    0.5),
+                                                                        0.5),
                                                               ],
                                                               begin: Alignment
                                                                   .topCenter,
@@ -891,33 +901,33 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                   .bottomCenter,
                                                             ),
                                                             borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                15),
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
                                                             border: Border.all(
                                                                 width: 2.0),
                                                             //borderRadius: BorderRadius.circular(20.0),
                                                           ),
                                                           child: Padding(
                                                             padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
+                                                                const EdgeInsets
+                                                                    .all(8.0),
                                                             child: Column(
                                                                 children: [
                                                                   Row(
                                                                     mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
                                                                     children: [
                                                                       Padding(
                                                                           padding: EdgeInsets.symmetric(
                                                                               horizontal:
-                                                                              5),
+                                                                                  5),
                                                                           child:
-                                                                          Text(
+                                                                              Text(
                                                                             doc.get("orderNumber").toString(),
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                                                                           )),
                                                                       Column(
                                                                         children: [
@@ -926,14 +936,14 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                                 "." +
                                                                                 _timeStartDelivery.day.toString(),
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                                                           ),
                                                                           Text(
                                                                             _timeStartDelivery.hour.toString().padLeft(2, '0') +
                                                                                 " : " +
                                                                                 _timeStartDelivery.minute.toString().padLeft(2, '0'),
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -944,14 +954,14 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                                 "." +
                                                                                 _timeFinishDelivery.day.toString(),
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                                                           ),
                                                                           Text(
                                                                             _timeFinishDelivery.hour.toString().padLeft(2, '0') +
                                                                                 " : " +
                                                                                 _timeFinishDelivery.minute.toString().padLeft(2, '0'),
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -980,8 +990,8 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                   ),
                                                                   Row(
                                                                     mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
                                                                     children: [
                                                                       Flexible(
                                                                         child: Padding(
@@ -995,13 +1005,13 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                       Padding(
                                                                           padding: EdgeInsets.symmetric(
                                                                               horizontal:
-                                                                              5),
+                                                                                  5),
                                                                           child:
-                                                                          Text(
+                                                                              Text(
                                                                             doc.get("orderProductQuantity").toString() +
                                                                                 " шт.",
                                                                             style:
-                                                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                                                                           )),
                                                                     ],
                                                                   ),
@@ -1022,18 +1032,40 @@ class _DriverScreenState extends State<DriverScreen> {
                                                                   ),
                                                                   Divider(
                                                                     height: 20,
-                                                                    thickness: 5,
-                                                                    color: Colors.indigo,
+                                                                    thickness:
+                                                                        5,
+                                                                    color: Colors
+                                                                        .indigo,
                                                                   ),
-                                                                  Text("Доставлен "
-                                                                      + _timeOrderDelivered.day.toString()
-                                                                      + "."
-                                                                      + _timeOrderDelivered.month.toString().padLeft(2, '0')
-                                                                      + " в "
-                                                                      + _timeOrderDelivered.hour.toString().padLeft(2, '0')
-                                                                      + ":"
-                                                                      + _timeOrderDelivered.minute.toString().padLeft(2, '0'),
-                                                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                  Text(
+                                                                    "Доставлен " +
+                                                                        _timeOrderDelivered
+                                                                            .day
+                                                                            .toString() +
+                                                                        "." +
+                                                                        _timeOrderDelivered
+                                                                            .month
+                                                                            .toString()
+                                                                            .padLeft(2,
+                                                                                '0') +
+                                                                        " в " +
+                                                                        _timeOrderDelivered
+                                                                            .hour
+                                                                            .toString()
+                                                                            .padLeft(2,
+                                                                                '0') +
+                                                                        ":" +
+                                                                        _timeOrderDelivered
+                                                                            .minute
+                                                                            .toString()
+                                                                            .padLeft(2,
+                                                                                '0'),
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            20),
                                                                   ),
                                                                 ]),
                                                           ),
