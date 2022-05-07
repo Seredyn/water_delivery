@@ -7,6 +7,7 @@ import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:water_delivery/screens/add_address_screen.dart';
 import 'package:water_delivery/screens/add_product_screen.dart';
 import 'package:water_delivery/screens/admin_screen.dart';
+import 'package:water_delivery/screens/become_supplier_screen.dart';
 import 'package:water_delivery/screens/create_order_screen.dart';
 import 'package:water_delivery/screens/create_user_screen.dart';
 import 'package:water_delivery/screens/driver_screen.dart';
@@ -129,6 +130,7 @@ class MyApp extends StatelessWidget {
           AddProductScreen.id : (context) => AddProductScreen(),
           SelectionAddressDeliveryScreen.id : (context) => SelectionAddressDeliveryScreen(),
           SelectionProductIDScreen.id : (context) => SelectionProductIDScreen(),
+          BecomeSupplierScreen.id : (context) => BecomeSupplierScreen(),
         },
       ),
     );

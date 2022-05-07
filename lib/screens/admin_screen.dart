@@ -46,7 +46,7 @@ class _AdminScreenState extends State<AdminScreen> {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text("Administrator"),
+            title: const Text("Администратор"),
             actions: [
               IconButton(
                   onPressed: () {

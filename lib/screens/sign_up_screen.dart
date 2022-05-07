@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
+import 'package:water_delivery/screens/become_supplier_screen.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -163,17 +164,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: () {
                         _submit(context);
                       },
-                      child: const Text('Create new account'),
+                      child: const Text('Создать новый аккаунт'),
                     ),
                     const SizedBox(
                       height: 15,
                     ),
                     TextButton(
-                        child: Text("Log into your account"),
+                        child: Text("Войти в свой аккаунт"),
                         onPressed: () {
                           Navigator.of(context)
                               .pushReplacementNamed(SignInScreen.id);
-                        }),
+                    }),
+                    SizedBox(height: 50,),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(BecomeSupplierScreen.id);
+                      },
+                      child: const Text('Стать поставщиком'),
+                    ),
                   ],
                 ),
               ),

@@ -64,6 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
         "name": name as String,
         "email": email as String,
         "role": "customer" as String,
+        "registrationDateTime": DateTime.now(),
       });
 
       print("Crete user will done");
@@ -137,6 +138,7 @@ class AuthCubit extends Cubit<AuthState> {
           "email": _userEmail,
           "phoneNumber": _phoneNumber,
           "role": "customer",
+          "registrationDateTime": DateTime.now(),
         });
       }
 
