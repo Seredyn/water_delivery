@@ -6,6 +6,7 @@ import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:water_delivery/screens/add_address_screen.dart';
 import 'package:water_delivery/screens/create_order_screen.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
+import 'package:water_delivery/models/user_model.dart';
 
 class UserScreen extends StatefulWidget {
   UserScreen({Key? key}) : super(key: key);
@@ -28,9 +29,6 @@ class _UserScreenState extends State<UserScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    users.doc(currentUserId).get().then((value) {
-      userNameFromFireStore = value.get("name");
-    });
 
     super.initState();
   }
@@ -46,9 +44,15 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    users.doc(currentUserId).get().then((value) {
+      userNameFromFireStore = value.get("name");
+    });
+
     final String currentUserName =
         userNameFromFireStore ?? userNameFromFirebaseAuth ?? "";
 
+    print("userNameFromFireStore: $userNameFromFireStore, userNameFromFirebaseAuth: $userNameFromFirebaseAuth");
     final Stream<QuerySnapshot> _addressStream =
         users.doc(currentUserId).collection("addresses").snapshots();
     final Stream<QuerySnapshot> _ordersStream =
