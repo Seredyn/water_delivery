@@ -1,6 +1,6 @@
 import 'package:water_delivery/models/user_model.dart';
 
-class Supplier extends User {
+class Supplier extends WaterUser {
 
   String companyName;
   Supplier({

@@ -206,7 +206,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String orderProductID,
     required int orderProductQuantity,
     required String orderDeliveryAddressID,
-    required double orderPrise,
+    required double orderPrice,
     required Timestamp orderDeliveryStartTimeStamp,
     required Timestamp orderDeliveryFinishTimeStamp,
   }) async {
@@ -245,7 +245,7 @@ class AuthCubit extends Cubit<AuthState> {
           "orderProductQuantity": orderProductQuantity as int,
           "orderDeliveryAddressID": orderDeliveryAddressID as String,
           "orderStatus": "new" as String,
-          "orderPrise": orderPrise as double,
+          "orderPrice": orderPrice as double,
           "orderCreateTimeStamp": Timestamp.now(),
           "orderDeliveryStartTimeStamp": orderDeliveryStartTimeStamp,
           "orderDeliveryFinishTimeStamp": orderDeliveryFinishTimeStamp,
@@ -410,6 +410,7 @@ class AuthCubit extends Cubit<AuthState> {
             .doc(orderID)
             .update({
           "orderDeliveredTimeStamp": _now,
+          "orderDeliveredTimeStampMillisecondsSinceEpoch": _now.millisecondsSinceEpoch
         })
             .then((value) => print("Order delivered timestamp added"))
             .catchError((error) =>

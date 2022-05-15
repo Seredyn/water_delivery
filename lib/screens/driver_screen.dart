@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:water_delivery/bloc/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:water_delivery/models/order_model.dart';
 import 'package:water_delivery/screens/sign_in_screen.dart';
 
 class DriverScreen extends StatefulWidget {
@@ -17,8 +18,7 @@ class DriverScreen extends StatefulWidget {
 class _DriverScreenState extends State<DriverScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference orders = FirebaseFirestore.instance.collection('orders');
-  CollectionReference products =
-      FirebaseFirestore.instance.collection('products');
+  CollectionReference products = FirebaseFirestore.instance.collection('products');
 
   String currentDriverId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -44,15 +44,29 @@ class _DriverScreenState extends State<DriverScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    DateTime _nowTimeDateTime = DateTime.now();
+    String _stringToParseBeginOfDay =
+        _nowTimeDateTime.year.toString() + "-" +
+        _nowTimeDateTime.month.toString().padLeft(2, '0') + "-" +
+        _nowTimeDateTime.day.toString().padLeft(2, '0') + " " +
+        "00:00:00";
+    DateTime _beginOfDayDateTime = DateTime.parse(_stringToParseBeginOfDay);
+    //Timestamp _nowTimeStamp = _beginOfDay.millisecondsSinceEpoch;
+    Timestamp _beginOfThisDayTimeStamp = Timestamp.fromDate(_beginOfDayDateTime);
+
+    print("_beginOfThisDayTimeStamp: $_beginOfThisDayTimeStamp");
+
     final Stream<QuerySnapshot> _confirmedOrdersStream =
         orders.where('orderStatus', isEqualTo: "confirmed").snapshots();
     final Stream<QuerySnapshot> _gettingsOrdersStream = orders
         .where('orderStatus', isEqualTo: "takenDriver")
         .where("driverDeliveryID", isEqualTo: currentDriverId)
         .snapshots();
-    final Stream<QuerySnapshot> _deliveredOrdersStream = orders
-        .where('orderStatus', isEqualTo: "delivered")
-        .where("driverDeliveryID", isEqualTo: currentDriverId)
+    final Stream<QuerySnapshot> _ordersStreamByMilliseconds = orders
+        //.where('orderStatus', isEqualTo: "delivered")
+        //.where("driverDeliveryID", isEqualTo: currentDriverId)
+        .where("orderDeliveredTimeStampMillisecondsSinceEpoch", isGreaterThanOrEqualTo:  _beginOfDayDateTime.millisecondsSinceEpoch)
         .snapshots();
 
     return DefaultTabController(
@@ -425,7 +439,7 @@ class _DriverScreenState extends State<DriverScreen> {
                       }),
                 ),
               ),
-              //
+              //Confirm Orders
               Container(
                 decoration: BoxDecoration(
                   color: Colors.lightBlueAccent.withOpacity(0.5),
@@ -756,14 +770,16 @@ class _DriverScreenState extends State<DriverScreen> {
                       }),
                 ),
               ),
+              // Delivered Orders
               Container(
                 decoration: BoxDecoration(
                   color: Colors.lightBlueAccent.withOpacity(0.4),
                 ),
                 child: SingleChildScrollView(
                   child: StreamBuilder<QuerySnapshot>(
-                      stream: _deliveredOrdersStream,
+                      stream: _ordersStreamByMilliseconds,
                       builder: (context, snapshot) {
+
                         if (snapshot.hasError) {
                           return Center(
                             child: Text("snapshot has error"),
@@ -780,10 +796,13 @@ class _DriverScreenState extends State<DriverScreen> {
                           return Column(
                             children: [
                               Text(
-                                  "Нет принятых и недоставленных заказов заказов."),
+                                  "Нет доставленных заказов сегодня."),
                             ],
                           );
                         }
+                        // if (snapshot.connectionState == ConnectionState.done) {
+                        //   Map<String, dynamic> orderMap = snapshot.data!. as Map<String, dynamic>;
+                        // }
 
                         return ListView.builder(
                             shrinkWrap: true,
@@ -791,6 +810,10 @@ class _DriverScreenState extends State<DriverScreen> {
                             itemBuilder: (context, index) {
                               final DocumentSnapshot doc =
                                   snapshot.data!.docs[index];
+
+                              if (doc.get("driverDeliveryID") != currentDriverId) {
+                                return Container();
+                              }
 
                               DateTime _timeStartDelivery = doc
                                   .get("orderDeliveryStartTimeStamp")
@@ -801,23 +824,17 @@ class _DriverScreenState extends State<DriverScreen> {
                               DateTime _timeOrderDelivered =
                                   doc.get("orderDeliveredTimeStamp").toDate();
 
+                              //if (_timeOrderDelivered)
+
                               return FutureBuilder<DocumentSnapshot>(
                                   future:
                                       users.doc(doc.get("orderClientID")).get(),
                                   builder: (BuildContext context,
                                       AsyncSnapshot<DocumentSnapshot>
                                           snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Text("Something went wrong");
-                                    }
-                                    if (snapshot.hasData &&
-                                        !snapshot.data!.exists) {
-                                      return Text("Document does not exist");
-                                    }
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.done) {
-                                      Map<String, dynamic> userMap =
-                                          snapshot.data!.data()
+                                    if (snapshot.hasError) {return Text("Something went wrong");}
+                                    if (snapshot.hasData && !snapshot.data!.exists) {return Text("Document does not exist");}
+                                    if (snapshot.connectionState == ConnectionState.done) { Map<String, dynamic> userMap = snapshot.data!.data()
                                               as Map<String, dynamic>;
                                       //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
@@ -832,51 +849,29 @@ class _DriverScreenState extends State<DriverScreen> {
                                               AsyncSnapshot<DocumentSnapshot>
                                                   snapshot) {
                                             if (snapshot.hasError) {
-                                              return Text(
-                                                  "Something went wrong");
+                                              return Text("Something went wrong");
                                             }
-                                            if (snapshot.hasData &&
-                                                !snapshot.data!.exists) {
-                                              return Text(
-                                                  "Document does not exist");
+                                            if (snapshot.hasData && !snapshot.data!.exists) {
+                                              return Text("Document does not exist");
                                             }
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.done) {
-                                              Map<String, dynamic>
-                                                  addressesMap =
-                                                  snapshot.data!.data()
-                                                      as Map<String, dynamic>;
+                                            if (snapshot.connectionState == ConnectionState.done) {
+                                              Map<String, dynamic> addressesMap = snapshot.data!.data() as Map<String, dynamic>;
                                               //return Text("Full Name: ${data['full_name']} ${data['last_name']}");
 
-                                              return FutureBuilder<
-                                                      DocumentSnapshot>(
+                                              return FutureBuilder<DocumentSnapshot>(
                                                   future: products
-                                                      .doc(doc.get(
-                                                          "orderProductID"))
+                                                      .doc(doc.get("orderProductID"))
                                                       .get(),
-                                                  builder: (BuildContext
-                                                          context,
-                                                      AsyncSnapshot<
-                                                              DocumentSnapshot>
-                                                          snapshot) {
+                                                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                                                     if (snapshot.hasError) {
-                                                      return Text(
-                                                          "Something went wrong");
+                                                      return Text("Something went wrong");
                                                     }
-                                                    if (snapshot.hasData &&
-                                                        !snapshot
-                                                            .data!.exists) {
-                                                      return Text(
-                                                          "Document does not exist");
+                                                    if (snapshot.hasData && !snapshot.data!.exists) {
+                                                      return Text("Document does not exist");
                                                     }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done) {
-                                                      Map<String, dynamic>
-                                                          productsMap =
-                                                          snapshot.data!.data()
-                                                              as Map<String,
-                                                                  dynamic>;
+                                                    if (snapshot.connectionState == ConnectionState.done) {
+                                                      Map<String, dynamic> productsMap = snapshot.data!.data()
+                                                              as Map<String, dynamic>;
 
                                                       return Padding(
                                                         padding:

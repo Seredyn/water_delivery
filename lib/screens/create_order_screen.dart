@@ -34,7 +34,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   late String productName;
   late int quantity;
   late double productPrise;
-  late double orderPrise;
+  late double orderPrice;
 
   late DateTime nowTime;
 
@@ -111,7 +111,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     productName = "";
     quantity = 1;
     productPrise = 0.0;
-    orderPrise = 0.0;
+    orderPrice = 0.0;
 
     nowTime = DateTime.now();
     waitingTimeFrom = nowTime;
@@ -193,10 +193,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       setState(() {
         productName = value.get("productName");
         productPrise = value.get("productPrise").toDouble();
-        orderPrise = productPrise * quantity;
+        orderPrice = productPrise * quantity;
         ScaffoldMessenger.of(context)
           ..removeCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text('orderPrise: $orderPrise')));
+          ..showSnackBar(SnackBar(content: Text('orderPrise: $orderPrice')));
       });
     });
   }
@@ -230,7 +230,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       orderProductID: checkedProductID,
       orderProductQuantity: quantity,
       orderDeliveryAddressID: checkedAddressID,
-      orderPrise: orderPrise,
+      orderPrice: orderPrice,
       orderDeliveryStartTimeStamp: Timestamp.fromDate(DateTime.parse(_valueToValidateToParseDateTimeStart)),
       orderDeliveryFinishTimeStamp: Timestamp.fromDate(DateTime.parse(_valueToValidateToParseDateTimeFinish)),
     ).then((value) {
@@ -329,7 +329,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                     }
                                     setState(() {
                                       quantity--;
-                                      orderPrise = productPrise * quantity;
+                                      orderPrice = productPrise * quantity;
                                     });
                                   },
                                 ),
@@ -348,7 +348,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   onPressed: () {
                                     setState(() {
                                       quantity++;
-                                      orderPrise = productPrise * quantity;
+                                      orderPrice = productPrise * quantity;
                                     });
                                   },
                                 ),
@@ -383,7 +383,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
                                 child:
-                                    Text(orderPrise.toStringAsFixed(2) + " грн.",
+                                    Text(orderPrice.toStringAsFixed(2) + " грн.",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,

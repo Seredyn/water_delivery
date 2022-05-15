@@ -137,6 +137,12 @@ class _UserScreenState extends State<UserScreen> {
                             });
                       }),
                   SizedBox(height: 15,),
+                  ElevatedButton(
+                      onPressed: () async {
+                        await _goToAddAddressScreen();
+                      },
+                      child: Text("Добавить адрес")),
+                  SizedBox(height: 15,),
                   Text("Последние заказы",
                     style: Theme.of(context).textTheme.headline4,
                   ),
@@ -175,17 +181,11 @@ class _UserScreenState extends State<UserScreen> {
                                 title: Text((doc.get("orderCreateTimeStamp").toString())));
                             });
                       }),
-                  SizedBox(height: 15,),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await _goToAddAddressScreen();
-                      },
-                      child: Text("Add Address")),
                   SizedBox(
                     height: 30,
                   ),
                   ElevatedButton(
-                    child: Text("Create order"),
+                    child: Text("Создать заказ"),
                     onPressed: () async {
                       await _goToCreateOrderScreen();
                     },

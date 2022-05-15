@@ -54,21 +54,39 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   //TODO:- Delete sign in like test user
-  void _signInLikeTest1 (){
+  void _signInLikeUser1 (){
     context.read<AuthCubit>().signInWithEmailAndPassword(
-      email: "test1@gmail.com",
+      email: "user1@gmail.com",
       password: "111111"
     ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
   }
-  void _signInLikeTest2 (){
+  void _signInLikeDriver1 (){
     context.read<AuthCubit>().signInWithEmailAndPassword(
-        email: "test2@gmail.com",
+        email: "driver1@gmail.com",
         password: "111111"
     ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
   }
-  void _signInLikeTest3 (){
+  void _signInLikeAdmin1 (){
     context.read<AuthCubit>().signInWithEmailAndPassword(
-        email: "test3@gmail.com",
+        email: "admin1@gmail.com",
+        password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+  void _signInLikeUser2 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+        email: "user2@gmail.com",
+        password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+  void _signInLikeDriver2 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+        email: "driver2@gmail.com",
+        password: "111111"
+    ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
+  }
+  void _signInLikeAdmin2 (){
+    context.read<AuthCubit>().signInWithEmailAndPassword(
+        email: "admin2@gmail.com",
         password: "111111"
     ).then((value) => context.read<AuthCubit>().navigateToScreenByRole(context));
   }
@@ -186,25 +204,59 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: const EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  _signInLikeTest1();
+                                  _signInLikeUser1();
                                 },
-                                child: Text("Test1")),
+                                child: Text("User 1")),
                           ),
                           Padding(
                             padding: EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  _signInLikeTest2();
+                                  _signInLikeDriver1();
                                 },
-                                child: Text("Test2")),
+                                child: Text("Driver 1")),
                           ),
                           Padding(
                             padding: EdgeInsets.all(5),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  _signInLikeTest3();
+                                  _signInLikeAdmin1();
                                 },
-                                child: Text("Test3")),
+                                child: Text("Admin 1")),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 15,),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          //TODO:- Delete TESTS Sign In before Publishing app
+                          Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  _signInLikeUser2();
+                                },
+                                child: Text("User 2")),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  _signInLikeDriver2();
+                                },
+                                child: Text("Driver 2")),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  _signInLikeAdmin2();
+                                },
+                                child: Text("Admin 2")),
                           ),
                         ],
                       ),
